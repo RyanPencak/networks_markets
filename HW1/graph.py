@@ -22,6 +22,7 @@ def create_graph(n,p):
     for pair in itertools.combinations(node_list,2):
         if (choice([True,False], 1, p=[p,1-p])):
             G[pair[0]].append((pair[1], randint(1,101)))
+            G[pair[1]].append((pair[0], randint(1,101)))
 
     return G
 
@@ -58,23 +59,34 @@ def shortest_path(G,i,j):
         return distance
 
     else:
-        return float("inf")
+        return "infinity"
 
     return None
 
 
 # main function creates a graph and finds the shortest path
-def main(n,p):
-    G = create_graph(n,p)
+def main():
+    ##########################################################
+    # Question 8c
+    ##########################################################
+    G = create_graph(1000,0.1)
 
-    f = open("test_output.txt", "a")
+    distances = []
 
-    for i in range(5):
-        n1 = randint(1,n+1)
-        n2 = randint(1,n+1)
+    f = open("avg_shortest_path.txt", "a")
+
+    for i in range(1000):
+        n1 = randint(1,1001)
+        n2 = randint(1,1001)
 
         dist = shortest_path(G,n1,n2)
 
+        distances.append(dist)
+
         f.write("({},{},{})\n".format(n1,n2,dist))
 
-main(1000,0.1)
+    f.close()
+    print (sum(distances)/len(distances))
+    ##########################################################
+
+main()
