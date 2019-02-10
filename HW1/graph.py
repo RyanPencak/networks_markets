@@ -6,23 +6,39 @@ import itertools
 
 # given number of nodes n and probability p, output a random graph
 # as specified in homework
-def create_graph(n,p):
+def create_graph(n,p,fb=False):
     G = {}
 
     # Initialize undirected graph adjacency list
     for i in range(1,n+1):
         G[int("{}".format(i))] = []
 
-    # Create list of nodes
-    node_list = []
-    for i in range(1,n+1):
-        node_list.append(i)
+    # If using Facebook data read from file for nodes, else generate nodes
+    if (fb):
+        with open("facebook_combined.txt") as in_file:
+            node_list = in_file.readlines()
+            node_list = [x.strip().split() for x in node_list]
 
-    # For each combination of nodes, determine if there is an edge
-    for pair in itertools.combinations(node_list,2):
-        if (choice([True,False], 1, p=[p,1-p])):
-            G[pair[0]].append((pair[1], randint(1,101)))
-            G[pair[1]].append((pair[0], randint(1,101)))
+            for node_pair in node_list:
+                node_pair[0] = int(node_pair[0])
+                node_pair[1] = int(node_pair[1])
+
+        # Create edges for each pair
+        for node_pair in node_list:
+            G[node_pair[0]].append(node_pair[1])
+            G[node_pair[1]].append(node_pair[0])
+    else:
+        # Create list of nodes
+        node_list = []
+
+        for i in range(1,n+1):
+            node_list.append(i)
+
+        # For each combination of nodes, determine if there is an edge
+        for pair in itertools.combinations(node_list,2):
+            if (choice([True,False], 1, p=[p,1-p])):
+                G[pair[0]].append(pair[1])
+                G[pair[1]].append(pair[0])
 
     return G
 
@@ -35,7 +51,7 @@ def shortest_path(G,i,j):
       return 0
 
     # Array for visited nodes, originally containing the source in format (node, back pointer, weight)
-    visited = [(i,None,None)]
+    visited = [(i,None)]
 
     # Store neighbor nodes and distance to it
     discovered = {}
@@ -43,18 +59,18 @@ def shortest_path(G,i,j):
     while (len(visited) != 0):
         temp = visited.pop(0)
         if (temp[0] not in list(discovered.keys())):
-            discovered[temp[0]] = (temp[1],temp[2])
-            for (node, weight) in G[temp[0]]:
-                visited.append((node, temp[0], weight))
+            discovered[temp[0]] = (temp[1])
+            for node in G[temp[0]]:
+                visited.append((node, temp[0]))
 
     if (j in list(discovered.keys())):
-        back_reference = discovered[j][0]
-        distance = discovered[j][1]
+        back_reference = discovered[j]
+        distance = 1
 
         while (back_reference != i):
             cur = back_reference
-            back_reference = discovered[cur][0]
-            distance += discovered[cur][1]
+            back_reference = discovered[cur]
+            distance += 1
 
         return distance
 
@@ -87,6 +103,49 @@ def main():
 
     f.close()
     print (sum(distances)/len(distances))
+
     ##########################################################
+    # Question 8d
+    ##########################################################
+    # G2 = create_graph(1000,0.1)
+    #
+    # distances = []
+    #
+    # f = open("avg_shortest_path.txt", "a")
+    #
+    # for i in range(1000):
+    #     n1 = randint(1,1001)
+    #     n2 = randint(1,1001)
+    #
+    #     dist = shortest_path(G2,n1,n2)
+    #
+    #     distances.append(dist)
+    #
+    #     f.write("({},{},{})\n".format(n1,n2,dist))
+    #
+    # f.close()
+    # print (sum(distances)/len(distances))
+
+    ##########################################################
+    # Question 9a
+    ##########################################################
+    # fb_G = create_graph(1000,0.1,True)
+    #
+    # distances = []
+    #
+    # f = open("fb_shortest_path.txt", "a")
+    #
+    # for i in range(1000):
+    #     n1 = randint(1,1001)
+    #     n2 = randint(1,1001)
+    #
+    #     dist = shortest_path(G,n1,n2)
+    #
+    #     distances.append(dist)
+    #
+    #     f.write("({},{},{})\n".format(n1,n2,dist))
+    #
+    # f.close()
+    # print (sum(distances)/len(distances))
 
 main()
