@@ -1,86 +1,73 @@
 # include any code you need for your assignment in this file or in auxiliary
 # files that can be imported here.
 
-from numpy.random import choice, randint
+import networkx as nx
 import itertools
+from numpy.random import choice, randint
 
 # given number of nodes n and probability p, output a random graph
 # as specified in homework
-def create_graph(n,p,fb=False):
-    G = {}
+def create_graph(n,p):
+    G=nx.Graph()
+    G.add_nodes_from([i for i in range(n)])
 
-    # Initialize undirected graph adjacency list
+    # Create list of nodes
+    node_list = []
+
     for i in range(1,n+1):
-        G[int("{}".format(i))] = []
+        node_list.append(i)
 
-    # If using Facebook data read from file for nodes, else generate nodes
-    if (fb):
-        with open("facebook_combined.txt") as in_file:
-            node_list = in_file.readlines()
-            node_list = [x.strip().split() for x in node_list]
+    # For each combination of nodes, determine if there is an edge
+    for node_pair in itertools.combinations(node_list,2):
+        if (choice([True,False], 1, p=[p,1-p])):
+            G.add_edge(node_pair[0],node_pair[1])
 
-            for node_pair in node_list:
-                node_pair[0] = int(node_pair[0])
-                node_pair[1] = int(node_pair[1])
+    return G
 
-        # Create edges for each pair
+# create graph from Facebook data
+def create_fb_graph():
+    G=nx.Graph()
+
+    with open("facebook_combined.txt") as in_file:
+        node_list = in_file.readlines()
+        node_list = [x.strip().split() for x in node_list]
+
         for node_pair in node_list:
-            G[node_pair[0]].append(node_pair[1])
-            G[node_pair[1]].append(node_pair[0])
-    else:
-        # Create list of nodes
-        node_list = []
+            node_pair[0] = int(node_pair[0])
+            node_pair[1] = int(node_pair[1])
 
-        for i in range(1,n+1):
-            node_list.append(i)
-
-        # For each combination of nodes, determine if there is an edge
-        for pair in itertools.combinations(node_list,2):
-            if (choice([True,False], 1, p=[p,1-p])):
-                G[pair[0]].append(pair[1])
-                G[pair[1]].append(pair[0])
+    # Create edges for each pair
+    for node_pair in node_list:
+        G.add_edge(node_pair[0],node_pair[1])
 
     return G
 
 # given a graph G and nodes i,j, output the length of the shortest
 # path between i and j in G.
 def shortest_path(G,i,j):
-
     # Check if source is target
     if (i == j):
       return 0
 
-    # Array for visited nodes, originally containing the source in format (node, back pointer, weight)
-    visited = [(i,None)]
+    discovered = []
+    queue = [i]
 
-    # Store neighbor nodes and distance to it
-    discovered = {}
+    distance = 0
 
-    while (len(visited) != 0):
-        temp = visited.pop(0)
-        if (temp[0] not in list(discovered.keys())):
-            discovered[temp[0]] = (temp[1])
-            for node in G[temp[0]]:
-                visited.append((node, temp[0]))
+    while (len(queue) != 0):
+        temp = queue.pop(0)
+        discovered.append(temp)
+        neighbors = [n for n in list(G[temp]) if n not in queue and n not in discovered]
+        if j in neighbors:
+            return distance
+        queue.extend(neighbors)
+        distance += 1
 
-    if (j in list(discovered.keys())):
-        back_reference = discovered[j]
-        distance = 1
-
-        while (back_reference != i):
-            cur = back_reference
-            back_reference = discovered[cur]
-            distance += 1
-
-        return distance
-
-    else:
-        return "infinity"
-
-    return None
+    return "infinity"
 
 
-# main function creates a graph and finds the shortest path
+
+# main function for each homework problem
 def main():
     ##########################################################
     # Question 8c
@@ -102,12 +89,12 @@ def main():
         f.write("({},{},{})\n".format(n1,n2,dist))
 
     f.close()
-    print (sum(distances)/len(distances))
+    print ("The average distance is {}.".format(sum(distances)/len(distances)))
 
     ##########################################################
     # Question 8d
     ##########################################################
-    # G2 = create_graph(1000,0.1)
+    # G = create_graph(1000,0.1)
     #
     # distances = []
     #
@@ -117,19 +104,19 @@ def main():
     #     n1 = randint(1,1001)
     #     n2 = randint(1,1001)
     #
-    #     dist = shortest_path(G2,n1,n2)
-    #
+    #     dist = shortest_path(G,n1,n2)
     #     distances.append(dist)
     #
-    #     f.write("({},{},{})\n".format(n1,n2,dist))
+    #     avg_path = sum(distances)/len(distances)
+    #
+    #     f.write("({},{},{})\n".format(p,avg_path,dist))
     #
     # f.close()
-    # print (sum(distances)/len(distances))
 
     ##########################################################
     # Question 9a
     ##########################################################
-    # fb_G = create_graph(1000,0.1,True)
+    # fb_G = create_fb_graph
     #
     # distances = []
     #
@@ -146,6 +133,4 @@ def main():
     #     f.write("({},{},{})\n".format(n1,n2,dist))
     #
     # f.close()
-    # print (sum(distances)/len(distances))
-
-main()
+    # print "The average distance is {}.".format(sum(distances)/len(distances))
