@@ -17,7 +17,7 @@ def create_graph(n,p):
     # Create list of nodes
     node_list = []
 
-    for i in range(1,n+1):
+    for i in range(0,n):
         node_list.append(i)
 
     # For each combination of nodes, determine if there is an edge
@@ -87,13 +87,12 @@ def problem8c():
 
     f = open("avg_shortest_path.txt", "a")
 
-    print("\t Finding the shortest path for 1000 random nodes...")
+    print("\t Finding the shortest path for 1000 random node pairs...")
     for i in range(1000):
-        n1 = randint(1,1001)
-        n2 = randint(1,1001)
+        n1 = randint(0,1000)
+        n2 = randint(0,1000)
 
         dist = shortest_path(G,n1,n2)
-
         distances.append(dist)
 
         f.write("({},{},{})\n".format(n1,n2,dist))
@@ -123,8 +122,8 @@ def problem8d():
         distances = []
 
         for i in range(1000):
-            n1 = randint(1,1001)
-            n2 = randint(1,1001)
+            n1 = randint(0,1000)
+            n2 = randint(0,1000)
 
             dist = shortest_path(G,n1,n2)
 
@@ -143,11 +142,10 @@ def problem8d():
         distances = []
 
         for i in range(1000):
-            n1 = randint(1,1001)
-            n2 = randint(1,1001)
+            n1 = randint(0,1000)
+            n2 = randint(0,1000)
 
             dist = shortest_path(G,n1,n2)
-
             distances.append(dist)
 
         avg_distance = sum(distances)/len(distances)
@@ -157,7 +155,7 @@ def problem8d():
     f.close()
 
     print("\t Plotting average distance as a function of p...")
-    
+
     # Plot the average shortest path as a function of p
     plt.plot(x, y, color='blue', marker='o', linestyle='dashed', linewidth=2)
     plt.ylabel('Average Shortest Path')
@@ -180,19 +178,61 @@ def problem9a():
 
     f = open("fb_shortest_path.txt", "a")
 
-    print("\t Finding the shortest path for 1000 random nodes...")
+    print("\t Finding the shortest path for 1000 random node pairs...")
     for i in range(1000):
-        n1 = randint(1,1001)
-        n2 = randint(1,1001)
+        n1 = randint(0,4039)
+        n2 = randint(0,4039)
 
         dist = shortest_path(fb_G,n1,n2)
-
         distances.append(dist)
 
         f.write("({},{},{})\n".format(n1,n2,dist))
 
     f.close()
     print ("\t\tThe average distance is {}.".format(sum(distances)/len(distances)))
+
+
+##########################################################
+# Problem 9b
+##########################################################
+def problem9b():
+    print("\t Building a graph from facebook combined data...")
+    fb_G = create_fb_graph()
+
+    iterations = 100000
+    count = 0
+
+    print("Estimating the probability that two random nodes are connected...")
+    for i in range(iterations):
+        n1 = randint(0,4039)
+        n2 = randint(0,4039)
+
+        # If the distance is 1 (n2 is in adjacencies of n1) increment count
+        if (n2 in fb_G.neighbors(n1)):
+            count += 1
+
+    print ("\t\tThe probability is {}.".format(count/iterations))
+
+
+##########################################################
+# Problem 9c
+##########################################################
+def problem9c():
+
+    print("\t Building a random graph...")
+    G = create_graph(4039,0.01)
+
+    distances = []
+
+    print("\t Finding the shortest path for 1000 random node pairs...")
+    for i in range(4039):
+        n1 = randint(0,4039)
+        n2 = randint(0,4039)
+
+        dist = shortest_path(G,n1,n2)
+        distances.append(dist)
+
+    print ("\t\tThe average distance is {}.\n".format(sum(distances)/len(distances)))
 
 
 ##########################################################
@@ -205,5 +245,9 @@ def main():
     problem8d()
     print("Executing Problem 9a...")
     problem9a()
+    # print("Executing Problem 9b...")
+    # problem9b()
+    # print("Executing Problem 9c...")
+    # problem9c()
 
 main()
