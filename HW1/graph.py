@@ -57,6 +57,7 @@ def shortest_path(G,i,j):
 ##########################################################
 def problem8c():
 
+    print("\t Building a random graph...")
     G = create_graph(1000,0.1)
 
     distances = []
@@ -64,6 +65,7 @@ def problem8c():
     os.remove("avg_shortest_path.txt")
     f = open("avg_shortest_path.txt", "a")
 
+    print("\t Finding the shortest path for 1000 random nodes...")
     for i in range(1000):
         n1 = randint(1,1001)
         n2 = randint(1,1001)
@@ -75,7 +77,7 @@ def problem8c():
         f.write("({},{},{})\n".format(n1,n2,dist))
 
     f.close()
-    print ("The average distance is {}.".format(sum(distances)/len(distances)))
+    print ("\t\tThe average distance is {}.".format(sum(distances)/len(distances)))
 
 
 ##########################################################
@@ -89,6 +91,7 @@ def problem8d():
     x = []
     y = []
 
+    print("\t Finding the shortest paths for varying p...")
     for p in np.arange(0.01,0.05,0.01):
         x.append(p)
         G = create_graph(1000,p)
@@ -139,44 +142,51 @@ def problem8d():
 ##########################################################
 # Problem 9a
 ##########################################################
-# def problem9a():
-    # G=nx.Graph()
-    #
-    # # create graph from Facebook data
-    # with open("facebook_combined.txt") as in_file:
-    #     node_list = in_file.readlines()
-    #     node_list = [x.strip().split() for x in node_list]
-    #
-    #     for node_pair in node_list:
-    #         node_pair[0] = int(node_pair[0])
-    #         node_pair[1] = int(node_pair[1])
-    #
-    # # Create edges for each pair
-    # for node_pair in node_list:
-    #     G.add_edge(node_pair[0],node_pair[1])
-    # fb_G = create_fb_graph
-    #
-    # distances = []
-    #
-    # os.remove("fb_shortest_path.txt")
-    # f = open("fb_shortest_path.txt", "a")
-    #
-    # for i in range(1000):
-    #     n1 = randint(1,1001)
-    #     n2 = randint(1,1001)
-    #
-    #     dist = shortest_path(G,n1,n2)
-    #
-    #     distances.append(dist)
-    #
-    #     f.write("({},{},{})\n".format(n1,n2,dist))
-    #
-    # f.close()
-    # print "The average distance is {}.".format(sum(distances)/len(distances))
+def problem9a():
+
+    fb_G=nx.Graph()
+
+    print("\t Building a graph from facebook combined data...")
+    # create graph from Facebook data
+    with open("facebook_combined.txt") as in_file:
+        node_list = in_file.readlines()
+        node_list = [x.strip().split() for x in node_list]
+
+        for node_pair in node_list:
+            node_pair[0] = int(node_pair[0])
+            node_pair[1] = int(node_pair[1])
+
+    # Create edges for each pair
+    for node_pair in node_list:
+        fb_G.add_edge(node_pair[0],node_pair[1])
+
+    distances = []
+
+    os.remove("fb_shortest_path.txt")
+    f = open("fb_shortest_path.txt", "a")
+
+    print("\t Finding the shortest path for 1000 random nodes...")
+    for i in range(1000):
+        n1 = randint(1,1001)
+        n2 = randint(1,1001)
+
+        dist = shortest_path(fb_G,n1,n2)
+
+        distances.append(dist)
+
+        f.write("({},{},{})\n".format(n1,n2,dist))
+
+    f.close()
+    print ("\t\tThe average distance is {}.".format(sum(distances)/len(distances)))
 
 
 ##########################################################
 # Run the function for each problem
 ##########################################################
-# problem8c()
-problem8d()
+def main():
+    print("Executing Problem 8c...")
+    problem8c()
+    print("Executing Problem 8d...")
+    problem8d()
+    print("Executing Problem 9a...")
+    problem9a()
