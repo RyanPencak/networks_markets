@@ -190,3 +190,5 @@ def main():
     problem8d()
     print("Executing Problem 9a...")
     problem9a()
+
+main()
