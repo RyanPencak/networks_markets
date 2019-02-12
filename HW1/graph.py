@@ -62,7 +62,9 @@ def problem8c():
 
     distances = []
 
-    os.remove("avg_shortest_path.txt")
+    if (os.path.exists("avg_shortest_path.txt")):
+        os.remove("avg_shortest_path.txt")
+
     f = open("avg_shortest_path.txt", "a")
 
     print("\t Finding the shortest path for 1000 random nodes...")
@@ -84,7 +86,9 @@ def problem8c():
 # Question 8d
 ##########################################################
 def problem8d():
-    os.remove("varying_p.txt")
+    if (os.path.exists("varying_p.txt")):
+        os.remove("varying_p.txt")
+
     f = open("varying_p.txt", "a")
     f.write("p, avg_shortest_path\n")
 
@@ -162,7 +166,9 @@ def problem9a():
 
     distances = []
 
-    os.remove("fb_shortest_path.txt")
+    if (os.path.exists("fb_shortest_path.txt")):
+        os.remove("fb_shortest_path.txt")
+
     f = open("fb_shortest_path.txt", "a")
 
     print("\t Finding the shortest path for 1000 random nodes...")
