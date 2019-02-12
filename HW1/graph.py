@@ -52,6 +52,26 @@ def shortest_path(G,i,j):
     return "infinity"
 
 
+# Create and return graph from facebook data
+def create_fb_graph():
+    fb_G = nx.Graph()
+
+    # create graph from Facebook data
+    with open("facebook_combined.txt") as in_file:
+        node_list = in_file.readlines()
+        node_list = [x.strip().split() for x in node_list]
+
+        for node_pair in node_list:
+            node_pair[0] = int(node_pair[0])
+            node_pair[1] = int(node_pair[1])
+
+    # Create edges for each pair
+    for node_pair in node_list:
+        fb_G.add_edge(node_pair[0],node_pair[1])
+
+    return fb_G
+
+
 ##########################################################
 # Problem 8c
 ##########################################################
@@ -79,7 +99,7 @@ def problem8c():
         f.write("({},{},{})\n".format(n1,n2,dist))
 
     f.close()
-    print ("\t\tThe average distance is {}.".format(sum(distances)/len(distances)))
+    print ("\t\tThe average distance is {}.\n".format(sum(distances)/len(distances)))
 
 
 ##########################################################
@@ -136,8 +156,10 @@ def problem8d():
 
     f.close()
 
+    print("\t Plotting average distance as a function of p...")
+    
     # Plot the average shortest path as a function of p
-    plt.plot(x,y,'o')
+    plt.plot(x, y, color='blue', marker='o', linestyle='dashed', linewidth=2)
     plt.ylabel('Average Shortest Path')
     plt.xlabel('p')
     plt.show()
@@ -148,21 +170,8 @@ def problem8d():
 ##########################################################
 def problem9a():
 
-    fb_G=nx.Graph()
-
     print("\t Building a graph from facebook combined data...")
-    # create graph from Facebook data
-    with open("facebook_combined.txt") as in_file:
-        node_list = in_file.readlines()
-        node_list = [x.strip().split() for x in node_list]
-
-        for node_pair in node_list:
-            node_pair[0] = int(node_pair[0])
-            node_pair[1] = int(node_pair[1])
-
-    # Create edges for each pair
-    for node_pair in node_list:
-        fb_G.add_edge(node_pair[0],node_pair[1])
+    fb_G = create_fb_graph()
 
     distances = []
 
