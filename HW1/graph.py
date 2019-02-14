@@ -3,8 +3,8 @@
 
 import os
 import networkx as nx
-import itertools
-from numpy.random import choice, randint
+from numpy.random import randint
+from random import random as roll
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -14,16 +14,10 @@ def create_graph(n,p):
     G=nx.Graph()
     G.add_nodes_from([i for i in range(n)])
 
-    # Create list of nodes
-    node_list = []
-
-    for i in range(0,n):
-        node_list.append(i)
-
-    # For each combination of nodes, determine if there is an edge
-    for node_pair in itertools.combinations(node_list,2):
-        if (choice([True,False], 1, p=[p,1-p])):
-            G.add_edge(node_pair[0],node_pair[1])
+    for i in range(n):
+        for j in range(i+1, n):
+            if roll() < p:
+                G.add_edge(i,j)
 
     return G
 
@@ -40,14 +34,14 @@ def shortest_path(G,i,j):
 
     distance = 0
 
-    while (len(queue) != 0):
+    while queue:
         temp = queue.pop(0)
         discovered.append(temp)
         neighbors = [n for n in list(G[temp]) if n not in queue and n not in discovered]
+        distance += 1
         if j in neighbors:
             return distance
         queue.extend(neighbors)
-        distance += 1
 
     return "infinity"
 
