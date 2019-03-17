@@ -17,16 +17,16 @@ def max_flow(G, s, t):
     # Get a path from s to t
     path = BFS(G, s, t)
 
+    residual = G
+
     # While there is a path from source to sink
     while (path != None):
-
-        residual_g = G
 
         # Push maximum flow along this path (minimum cap of edges)
         path_flow = float("Inf")
         for i in range(0, len(path)-1):
-            if (residual_g[path[i]][path[i+1]]['cap'] < path_flow):
-                path_flow = residual_g[path[i]][path[i+1]]['cap']
+            if (residual[path[i]][path[i+1]]['cap'] < path_flow):
+                path_flow = residual[path[i]][path[i+1]]['cap']
 
         # Increase max flow by max flow of current path
         max_flow += path_flow
@@ -34,23 +34,23 @@ def max_flow(G, s, t):
         # Decrease capacity of each edge where flow was added
         # Create a reverse edge with capacity equal to the flow passed through that edge
         for i in range(0, len(path)-1):
-            residual_g[path[i]][path[i+1]]['cap'] -= path_flow
+            residual[path[i]][path[i+1]]['cap'] -= path_flow
 
-            if (residual_g[path[i]][path[i+1]]['cap'] == 0):
-                residual_g.remove_edge(path[i],path[i+1])
+            if (residual[path[i]][path[i+1]]['cap'] == 0):
+                residual.remove_edge(path[i],path[i+1])
 
-            if (residual_g.has_edge(path[i+1],path[i])):
-                residual_g[path[i+1]][path[i]]['cap'] += path_flow
+            if (residual.has_edge(path[i+1],path[i])):
+                residual[path[i+1]][path[i]]['cap'] += path_flow
             else:
-                residual_g.add_edge(path[i+1], path[i])
-                residual_g[path[i+1]][path[i]]['cap'] = path_flow
+                residual.add_edge(path[i+1], path[i])
+                residual[path[i+1]][path[i]]['cap'] = path_flow
 
         plt.plot()
-        nx.draw(residual_g, with_labels=True, font_weight='bold')
+        nx.draw(residual, with_labels=True, font_weight='bold')
         # plt.show()
 
         # Find a path from source to sink in new residual graph
-        path = BFS(residual_g, s, t)
+        path = BFS(residual, s, t)
 
     return max_flow
 
