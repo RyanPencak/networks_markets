@@ -3,24 +3,24 @@
 
 import os
 import networkx as nx
-from random import random as roll
 from helper_functions import *
-# import numpy as np
-# from numpy.random import randint
 
 # 8 (a)
 # implement an algorithm that computes the maximum flow in a graph G
 # Note: you may represent the graph, source, sink, and edge capacities
 # however you want. You may also change the inputs to the function below.
-# I am passing in edge capacities in the graph structure itself
+# We pass in edge capacities in the networkx graph structure itself as G[node1][node2]['cap']
 def max_flow(G, s, t):
 
     max_flow = 0
-    residual_g = G
-    path = BFS(residual_g, s, t)
+
+    # Get a path from s to t
+    path = BFS(G, s, t)
 
     # While there is a path from source to sink
     while (path != None):
+
+        residual_g = G
 
         # Push maximum flow along this path (minimum cap of edges)
         path_flow = float("Inf")
@@ -28,12 +28,8 @@ def max_flow(G, s, t):
             if (residual_g[path[i]][path[i+1]]['cap'] < path_flow):
                 path_flow = residual_g[path[i]][path[i+1]]['cap']
 
-        print("Path Flow: " + str(path_flow))
-
         # Increase max flow by max flow of current path
         max_flow += path_flow
-
-        print("Max Flow: " + str(max_flow))
 
         # Decrease capacity of each edge where flow was added
         # Create a reverse edge with capacity equal to the flow passed through that edge
@@ -91,16 +87,16 @@ def BFS(G,i,j):
 ##########################################################
 # Problem 8a Figure 6.1
 ##########################################################
-def problem8a_figure61():
+def problem8a_figure6_1():
     G = create_figure6_1()
     f = max_flow(G,1,4)
-    print(f)
+    print("Max Flow: " + str(f))
 
 
 ##########################################################
 # Problem 8a Figure 6.3
 ##########################################################
-def problem8a_figure63():
+def problem8a_figure6_3():
     pass
 
 
@@ -132,4 +128,4 @@ def problem9c():
     pass
 
 
-problem8a_figure61()
+problem8a_figure6_1()

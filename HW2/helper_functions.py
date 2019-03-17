@@ -1,6 +1,5 @@
 import os
 import networkx as nx
-from random import random as roll
 import matplotlib.pyplot as plt
 
 
