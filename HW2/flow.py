@@ -24,7 +24,7 @@ def max_flow(G, s, t):
 
         # Push maximum flow along this path (minimum cap of edges)
         path_flow = float("Inf")
-        for i in range(0, len(path)-2):
+        for i in range(0, len(path)-1):
             if (residual_g[path[i]][path[i+1]]['cap'] < path_flow):
                 path_flow = residual_g[path[i]][path[i+1]]['cap']
 
@@ -33,8 +33,9 @@ def max_flow(G, s, t):
 
         # Decrease capacity of each edge where flow was added
         # Create a reverse edge with capacity equal to the flow passed through that edge
-        for i in range(0, len(path)-2):
+        for i in range(0, len(path)-1):
             residual_g[path[i]][path[i+1]]['cap'] -= path_flow
+
             if (residual_g[path[i]][path[i+1]]['cap'] == 0):
                 residual_g.remove_edge(path[i],path[i+1])
 
@@ -61,7 +62,7 @@ def edge_disjoint_paths(G, u, v):
     return -1
 
 
-# given a graph G and nodes i,j, output a path if one exists else return None
+# given a graph G and nodes i,j, use breadth first search to output a path if one exists else return None
 def BFS(G,i,j):
     # Check if source is target
     if (i == j):
