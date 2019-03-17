@@ -97,7 +97,9 @@ def problem8a_figure6_1():
 # Problem 8a Figure 6.3
 ##########################################################
 def problem8a_figure6_3():
-    pass
+    G = create_figure6_3()
+    f = max_flow(G,1,12)
+    print("Max Flow: " + str(f))
 
 
 ##########################################################
@@ -129,3 +131,4 @@ def problem9c():
 
 
 problem8a_figure6_1()
+problem8a_figure6_3()
