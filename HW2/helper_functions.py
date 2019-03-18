@@ -112,3 +112,49 @@ def create_fb_graph():
         fb_G.add_edge(node_pair[0],node_pair[1])
 
     return fb_G
+
+
+def create_q_5_fig_1():
+    G = nx.Graph()
+
+    G.add_edge("g", "h")
+    G.add_edge("h", "c")
+    G.add_edge("h", "m")
+    G.add_edge("c", "e")
+    G.add_edge("c", "d")
+    G.add_edge("m", "k")
+    G.add_edge("m", "n")
+    G.add_edge("e", "k")
+    G.add_edge("e", "f")
+    G.add_edge("k", "f")
+    G.add_edge("k", "l")
+    G.add_edge("f", "l")
+    G.add_edge("f", "d")
+    G.add_edge("l", "n")
+    G.add_edge("n", "i")
+    G.add_edge("d", "i")
+    G.add_edge("i", "j")
+
+    return G
+
+def create_figure4_1_1():
+    G = nx.Graph()
+    G.add_edge("a", "b")
+    G.add_edge("b", "c")
+    G.add_edge("c", "d")
+
+    return G
+
+def create_figure4_1_2():
+    G = nx.Graph()
+    G.add_edge("a", "b")
+    G.add_edge("b", "c")
+    G.add_edge("b", "d")
+    G.add_edge("d", "e")
+    G.add_edge("d", "f")
+    G.add_edge("f", "g")
+
+    return G
+
+
+
