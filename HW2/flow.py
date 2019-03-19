@@ -4,6 +4,8 @@
 import os
 import networkx as nx
 from helper_functions import *
+from numpy.random import randint
+import matplotlib.pyplot as plt
 
 # 8 (a)
 # implement an algorithm that computes the maximum flow in a graph G
@@ -59,7 +61,31 @@ def max_flow(G, s, t):
 # implement an algorithm that determines the number of edge-disjoint paths
 # between two nodes in a graph G
 def edge_disjoint_paths(G, u, v):
-    return -1
+    # number of edge_disjoint paths = max_flow(u,v) in (G,c) where c(e)=1
+    return(max_flow(G, u, v))
+
+
+# transform the facebook data into a directed graph
+def transformFB():
+    fb_G = nx.DiGraph()
+
+    # create directed graph from Facebook data
+    with open("facebook_combined.txt") as in_file:
+        node_list = in_file.readlines()
+        node_list = [x.strip().split() for x in node_list]
+
+    # Create edges for each pair
+    for node_pair in node_list:
+        node_pair[0] = int(node_pair[0])
+        node_pair[1] = int(node_pair[1])
+        fb_G.add_edge(node_pair[0],node_pair[1])
+        fb_G.add_edge(node_pair[1],node_pair[0])
+        fb_G[node_pair[0]][node_pair[1]]['cap'] = 1
+        fb_G[node_pair[1]][node_pair[0]]['cap'] = 1
+
+    print("Graph Generated")
+
+    return fb_G
 
 
 # given a graph G and nodes i,j, use breadth first search to output a path if one exists else return None
@@ -107,29 +133,22 @@ def problem8a_figure6_3():
 # Problem 8d
 ##########################################################
 def problem8d():
-    pass
+    fb_G = transformFB()
 
+    disjoint_paths = []
 
-##########################################################
-# Problem 9a Figure 3.1
-##########################################################
-def problem9a_figure31():
-    pass
+    # Choose 2 random nodes 1000 times
+    for i in range(1000):
+        u = randint(0,4039)
+        v = randint(0,4039)
 
+        num_paths = edge_disjoint_paths(fb_G, u, v)
+        print(num_paths)
+        disjoint_paths.append(num_paths)
 
-##########################################################
-# Problem 9b
-##########################################################
-def problem9b():
-    pass
-
-
-##########################################################
-# Problem 9c
-##########################################################
-def problem9c():
-    pass
+    print("Average number of edge-disjoint paths: " + str(sum(disjoint_paths)/len(disjoint_paths)))
 
 
 problem8a_figure6_1()
 problem8a_figure6_3()
+problem8d()
