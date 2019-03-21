@@ -109,7 +109,6 @@ def BFS(G,i,j):
                 path.insert(0,n)
                 n = G.nodes[n]['previous']
             path.insert(0,i)
-            print(path)
             return path
         queue.extend(neighbors)
 
@@ -141,21 +140,20 @@ def problem8a_figure6_3():
 ##########################################################
 def problem8d():
     print("\n\nCalculating Edge Disjoint Paths for Facebook Graph...")
-    fb_G = transformFB()
-
     disjoint_paths = []
 
     # Choose 2 random nodes 1000 times
     for i in range(100):
-        u = randint(0,4039)
-        v = randint(0,4039)
+        fb_graph = transformFB()
+        u = randint(0,4038)
+        v = randint(0,4038)
 
         # Pick two different nodes
         while (u == v):
             v = randint(0,4039)
 
-        num_paths = edge_disjoint_paths(fb_G, u, v)
-        print("\nStep " + str(i+1) + "/100")
+        num_paths = edge_disjoint_paths(fb_graph, u, v)
+        print("\nStep " + str(i+1) + "/100: " + str(num_paths))
         disjoint_paths.append(num_paths)
 
     print("Average number of edge-disjoint paths: " + str(sum(disjoint_paths)/len(disjoint_paths)))
