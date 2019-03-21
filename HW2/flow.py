@@ -4,6 +4,8 @@
 import os
 import networkx as nx
 from helper_functions import *
+from numpy.random import randint
+import matplotlib.pyplot as plt
 
 # 8 (a)
 # implement an algorithm that computes the maximum flow in a graph G
@@ -45,8 +47,8 @@ def max_flow(G, s, t):
                 residual.add_edge(path[i+1], path[i])
                 residual[path[i+1]][path[i]]['cap'] = path_flow
 
-        plt.plot()
-        nx.draw(residual, with_labels=True, font_weight='bold')
+        # plt.plot()
+        # nx.draw(residual, with_labels=True, font_weight='bold')
         # plt.show()
 
         # Find a path from source to sink in new residual graph
@@ -59,28 +61,57 @@ def max_flow(G, s, t):
 # implement an algorithm that determines the number of edge-disjoint paths
 # between two nodes in a graph G
 def edge_disjoint_paths(G, u, v):
-    return -1
+    # number of edge_disjoint paths = max_flow(u,v) in (G,c) where c(e)=1
+    return(max_flow(G, u, v))
 
 
-# given a graph G and nodes i,j, use breadth first search to output a path if one exists else return None
+# transform the facebook data into a directed graph
+def transformFB():
+    fb_G = nx.DiGraph()
+
+    # create directed graph from Facebook data
+    with open("facebook_combined.txt") as in_file:
+        node_list = in_file.readlines()
+        node_list = [x.strip().split() for x in node_list]
+
+    # Create edges for each pair
+    for node_pair in node_list:
+        node_pair[0] = int(node_pair[0])
+        node_pair[1] = int(node_pair[1])
+        fb_G.add_edge(node_pair[0],node_pair[1])
+        fb_G.add_edge(node_pair[1],node_pair[0])
+        fb_G[node_pair[0]][node_pair[1]]['cap'] = 1
+        fb_G[node_pair[1]][node_pair[0]]['cap'] = 1
+
+    return fb_G
+
 def BFS(G,i,j):
     # Check if source is target
     if (i == j):
-      return [j]
+      return None
 
-    queue = [[i]]
+    G.nodes[i]['previous'] = None
+
+    discovered = []
+    queue = [i]
+
+    path = []
 
     while queue:
-        cur_path = queue.pop(0)
-        temp = cur_path[-1]
-
-        if temp == j:
-            return cur_path
-
-        for neighbor in [n for n in list(G[temp]) if n not in queue and n not in cur_path and n]:
-            next_path = list(cur_path)
-            next_path.append(neighbor)
-            queue.append(next_path)
+        temp = queue.pop(0)
+        discovered.append(temp)
+        neighbors = [n for n in list(G[temp]) if n not in queue and n not in discovered]
+        for neighbor in neighbors:
+            G.nodes[neighbor]['previous'] = temp
+        if j in neighbors:
+            n = j
+            while (G.nodes[n]['previous'] != None):
+                path.insert(0,n)
+                n = G.nodes[n]['previous']
+            path.insert(0,i)
+            print(path)
+            return path
+        queue.extend(neighbors)
 
     return None
 
@@ -89,47 +120,47 @@ def BFS(G,i,j):
 # Problem 8a Figure 6.1
 ##########################################################
 def problem8a_figure6_1():
+    print("Calculating Max Flow for Figure 6.1...")
     G = create_figure6_1()
     f = max_flow(G,1,4)
-    print("Max Flow: " + str(f))
+    print("\nMax Flow: " + str(f))
 
 
 ##########################################################
 # Problem 8a Figure 6.3
 ##########################################################
 def problem8a_figure6_3():
+    print("\n\nCalculating Max Flow for Figure 6.3...")
     G = create_figure6_3()
     f = max_flow(G,1,12)
-    print("Max Flow: " + str(f))
+    print("\nMax Flow: " + str(f))
 
 
 ##########################################################
 # Problem 8d
 ##########################################################
 def problem8d():
-    pass
+    print("\n\nCalculating Edge Disjoint Paths for Facebook Graph...")
+    fb_G = transformFB()
 
+    disjoint_paths = []
 
-##########################################################
-# Problem 9a Figure 3.1
-##########################################################
-def problem9a_figure31():
-    pass
+    # Choose 2 random nodes 1000 times
+    for i in range(100):
+        u = randint(0,4039)
+        v = randint(0,4039)
 
+        # Pick two different nodes
+        while (u == v):
+            v = randint(0,4039)
 
-##########################################################
-# Problem 9b
-##########################################################
-def problem9b():
-    pass
+        num_paths = edge_disjoint_paths(fb_G, u, v)
+        print("\nStep " + str(i+1) + "/100")
+        disjoint_paths.append(num_paths)
 
-
-##########################################################
-# Problem 9c
-##########################################################
-def problem9c():
-    pass
+    print("Average number of edge-disjoint paths: " + str(sum(disjoint_paths)/len(disjoint_paths)))
 
 
 problem8a_figure6_1()
 problem8a_figure6_3()
+problem8d()

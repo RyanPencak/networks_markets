@@ -45,28 +45,28 @@ def q_9_a():
 	thresh = 0.45
 	success_fig4_1_1 = contagion_brd(success_fig4_1_1, infected_node, thresh)
 
-	print("With {} infected and threshold {}, the cascade was {}".format(infected_node, 
+	print("With {} infected and threshold {}, the cascade was {}".format(infected_node,
 		thresh, did_cascade(success_fig4_1_1)))
 
 	failed_fig4_1_1 = create_figure4_1_1()
 	infected_node = ["a"]
 	thresh = 0.5
 	failed_fig4_1_1 = contagion_brd(failed_fig4_1_1, infected_node, thresh)
-	print("With {} infected and threshold {}, the cascade was {}".format(infected_node, 
+	print("With {} infected and threshold {}, the cascade was {}".format(infected_node,
 		thresh, did_cascade(failed_fig4_1_1)))
 
 	success_fig4_1_2 = create_figure4_1_2()
 	infected_node = ["a", "c", "e", "g"]
 	thresh = 0.6
 	success_fig4_1_2 = contagion_brd(success_fig4_1_2, infected_node, thresh)
-	print("With {} infected and threshold {}, the cascade was {}".format(infected_node, 
+	print("With {} infected and threshold {}, the cascade was {}".format(infected_node,
 		thresh, did_cascade(success_fig4_1_2)))
 
 	failed_fig4_1_2 = create_figure4_1_2()
 	infected_node = ["a"]
 	thresh = 0.35
 	failed_fig4_1_2 = contagion_brd(failed_fig4_1_2, infected_node, thresh)
-	print("With {} infected and threshold {}, the cascade was {}".format(infected_node, 
+	print("With {} infected and threshold {}, the cascade was {}".format(infected_node,
 		thresh, did_cascade(failed_fig4_1_2)))
 
 # Approx 3080 (3082.06)
