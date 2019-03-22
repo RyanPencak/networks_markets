@@ -123,7 +123,7 @@ def bonus():
 		r = minimal_cascade(fb, q, 100)
 		print("{}:{}".format(q, len(r)))
 
-# q_9_a()
-# q_9_b()
-# q_9_c()
-bonus()
+q_9_a()
+q_9_b()
+q_9_c()
+# bonus()
