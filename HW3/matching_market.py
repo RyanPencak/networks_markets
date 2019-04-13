@@ -1,6 +1,9 @@
 # include any code you need for your assignment in this file or in auxiliary
 # files that can be imported here.
 
+import networkx as nx
+from helper_functions import *
+
 # 9 (a)
 # implement an algorithm that given a bipartite graph G, outputs
 # either a perfect matching or a constricted set
@@ -14,7 +17,7 @@ def matching_or_cset(G):
 # which you can assume to just be labeled 0,1,...,n-1 in each case),
 # and values where values[i][j] represents the ith players value for item j,
 # output a market equilibrium consisting of prices and matching
-# (p,M) where player i pays p[i] for item M[i]. 
+# (p,M) where player i pays p[i] for item M[i].
 def market_eq(n, values):
     p = [0]*n
     M = [0]*n
@@ -30,4 +33,27 @@ def vcg(n, m, values):
     p = [0]*n
     M = [0]*n
     return (p,M)
-    
+
+
+##########################################################
+# Problem 9c
+##########################################################
+def problem9c():
+    print("Problem 9c Figure 8.3...")
+    G = generateFigure8_3()
+    s = matching_or_cset()
+    print(s)
+
+
+##########################################################
+# Problem 10c
+##########################################################
+def problem10c():
+    print("Problem 10c Figure 8.3...")
+    G = generateFigure8_3()
+    s = vcg()
+    print(s)
+
+
+# problem9c()
+# problem10c()
