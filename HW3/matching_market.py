@@ -20,6 +20,23 @@ def gen_di_graph(G):
             DG.add_edge(n, "sink", capacity=1)
             DG.nodes[n]["bipartite"] = 1
     return DG
+
+def get_preferred_graph(n, values):
+    G = nx.Graph()
+    for i in range(n):
+        max_val, count = 0, 0
+        idx_of_max_val = count
+        for val in values[i]:
+            if val > max_val:
+                max_val = val
+                idx_of_max_val = count
+            count += 1
+        player = "player_{}".format(i)
+        item = "item_{}".format(idx_of_max_val)
+        G.add_edge(player, item)
+        G.nodes[player]["bipartite"], G.nodes[item] = 0, 1
+    return G
+
 # 9 (a)
 # implement an algorithm that given a bipartite graph G, outputs
 # either a perfect matching or a constricted set
@@ -50,17 +67,29 @@ def matching_or_cset(G):
 def market_eq(n, values):
     p = [0]*n
     M = [0]*n
-    G = nx.Graph()
-    for i in range(n):
-        player = "player_{}".format(i)
-        for v in values[i]:
-            item = "item_{}".format(v)
-            G.add_edge(player, item)
-            G.nodes[player]["bipartite"] = 0
-            G.nodes[item]["bipartite"] = 1
     while True:
-        if matching_or_cset(G)[1]:
+        preferred = get_preferred_graph(n, values)
+        m_or_c = matching_or_cset(preferred)
+        if m_or_c[1]:
+            for edge in m_or_c[0]:
+                M[edge[0]] = edge[1]
             return (p,M)
+        neighbors_incremented = []
+        for constrict in m_or_c[0]:
+            for neighbor in preferred[constrict]:
+                if neighbor not in neighbors_incremented:
+                    value_index = int(neighbor.split("_")[1])
+                    for i in range(n):
+                        values[i][value_index] += 1
+                    p[value_index] += 1
+                    neighbors_incremented.add(neighbor)
+        count = 0
+        for i in p:
+            if i > 0: count += 1
+        if count == len(p):
+            for i in range(len(p)):
+                p[i] -= 1
+
 
 
 # 10 (b)
