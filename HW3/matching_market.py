@@ -3,25 +3,65 @@
 
 import networkx as nx
 from helper_functions import *
+# include any code you need for your assignment in this file or in auxiliary
+# files that can be imported here.
+from networkx.algorithms.flow import shortest_augmenting_path
+import networkx as nx
 
+def gen_di_graph(G):
+    DG = nx.DiGraph()
+    for n, d in G.nodes(data=True):
+        if d["bipartite"] == 0:
+            DG.add_edge("source", n, capacity=1)
+            DG.nodes[n]["bipartite"] = 0
+            for adj_node in G[n]:
+                DG.add_edge(n, adj_node)
+        elif d["bipartite"] == 1:
+            DG.add_edge(n, "sink", capacity=1)
+            DG.nodes[n]["bipartite"] = 1
+    return DG
 # 9 (a)
 # implement an algorithm that given a bipartite graph G, outputs
 # either a perfect matching or a constricted set
 # Note: this will be used in 9 (b) so you can implement it however you
 # like
+
+# DOuble check: is it legit to use min cut?
 def matching_or_cset(G):
-    return -1
+    DG = gen_di_graph(G)
+    min_f, part = nx.minimum_cut(DG, "source", "sink")
+    num_xs = len([n for n, d in G.nodes(data=True) if d["bipartite"]==0])
+    num_ys = len([n for n, d in G.nodes(data=True) if d["bipartite"]==1])
+    residual = shortest_augmenting_path(DG, "source", "sink")
+    if num_xs == num_ys and num_xs == min_f:
+        ret = []
+        for edge in residual.edges.data():
+            if edge[0] != "source" and edge[1] != "sink" and edge[2]["flow"] > 0:
+                ret.append((edge[0], edge[1]))
+        return (ret, True)
+    return ([x for x in part[0] if x!="source" and x!="sink" and DG.nodes[x]["bipartite"]==0], False)
 
 # 9 (b)
 # implement an algorithm that given n (the number of players and items,
 # which you can assume to just be labeled 0,1,...,n-1 in each case),
 # and values where values[i][j] represents the ith players value for item j,
 # output a market equilibrium consisting of prices and matching
-# (p,M) where player i pays p[i] for item M[i].
+# (p,M) where player i pays p[i] for item M[i]. 
 def market_eq(n, values):
     p = [0]*n
     M = [0]*n
-    return (p,M)
+    G = nx.Graph()
+    for i in range(n):
+        player = "player_{}".format(i)
+        for v in values[i]:
+            item = "item_{}".format(v)
+            G.add_edge(player, item)
+            G.nodes[player]["bipartite"] = 0
+            G.nodes[item]["bipartite"] = 1
+    while True:
+        if matching_or_cset(G)[1]:
+            return (p,M)
+
 
 # 10 (b)
 # Given n players 0,...,n-1 and m items 0,...,m-1 and valuations
