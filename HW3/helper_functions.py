@@ -2,7 +2,11 @@ import networkx as nx
 import random
 
 def generateFigure8_3():
-	pass
+	n = 3
+	values = [	[4, 12, 5], \
+				[7, 10, 9], \
+				[7, 7, 10]	]
+	return (n, values)
 
 def generateTestExample1():
 	n = 10
