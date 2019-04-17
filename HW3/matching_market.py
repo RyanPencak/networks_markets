@@ -34,7 +34,7 @@ def get_preferred_graph(n, values):
         player = "player_{}".format(i)
         item = "item_{}".format(idx_of_max_val)
         G.add_edge(player, item)
-        G.nodes[player]["bipartite"], G.nodes[item] = 0, 1
+        G.nodes[player]["bipartite"], G.nodes[item]["bipartite"] = 0, 1
     return G
 
 # 9 (a)
@@ -72,7 +72,7 @@ def market_eq(n, values):
         m_or_c = matching_or_cset(preferred)
         if m_or_c[1]:
             for edge in m_or_c[0]:
-                M[edge[0]] = edge[1]
+                M[int(edge[0].split("_")[1])] = int(edge[1].split("_")[1])
             return (p,M)
         neighbors_incremented = []
         for constrict in m_or_c[0]:
@@ -80,9 +80,9 @@ def market_eq(n, values):
                 if neighbor not in neighbors_incremented:
                     value_index = int(neighbor.split("_")[1])
                     for i in range(n):
-                        values[i][value_index] += 1
+                        values[i][value_index] -= 1
                     p[value_index] += 1
-                    neighbors_incremented.add(neighbor)
+                    neighbors_incremented.append(neighbor)
         count = 0
         for i in p:
             if i > 0: count += 1
@@ -128,10 +128,12 @@ def problem9c():
     f.write("\tOutputs: ")
     figure83_preferred_graph = get_preferred_graph(figure83_n,figure83_values)
     figure83_matching_or_cset = matching_or_cset(figure83_preferred_graph)
+    nx.draw(figure83_preferred_graph)
     if (figure83_matching_or_cset[1]):
-        f.write("\t\tConstricted Set: " + figure83_matching_or_cset[0])
+        f.write("\t\Perfect Matching: " + str(figure83_matching_or_cset[0]))
     else:
-        f.write("\t\tPerfect Matching: " + figure83_matching_or_cset[0])
+        print( figure83_matching_or_cset[0])
+        f.write("\t\Constricted Set: " + str(figure83_matching_or_cset[0]))
 
     f.write("\n\n")
 
