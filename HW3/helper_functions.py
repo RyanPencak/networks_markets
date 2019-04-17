@@ -1,5 +1,4 @@
 import networkx as nx
-import random
 
 def generateFigure8_3():
 	n = 3
@@ -34,11 +33,3 @@ def generateTestExample3():
 				[3, 6, 4, 13, 18, 5, 0, 18, 9, 3], [17, 4, 11, 18, 18, 0, 3, 4, 12, 4], \
 				[17, 12, 14, 15, 17, 3, 7, 19, 6, 6], [15, 12, 2, 16, 11, 20, 7, 0, 1, 9]	]
 	return (n, values)
-
-def generateRandomArray():
-	n = 10
-	array = []
-	while n > 0:
-		array.append(random.randint(0, 20))
-		n -= 1
-	print array
