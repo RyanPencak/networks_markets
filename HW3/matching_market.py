@@ -1,12 +1,12 @@
 # include any code you need for your assignment in this file or in auxiliary
 # files that can be imported here.
 
-import networkx as nx
-from helper_functions import *
 # include any code you need for your assignment in this file or in auxiliary
 # files that can be imported here.
-from networkx.algorithms.flow import shortest_augmenting_path
+import os
 import networkx as nx
+from networkx.algorithms.flow import shortest_augmenting_path
+from helper_functions import *
 
 def gen_di_graph(G):
     DG = nx.DiGraph()
@@ -43,7 +43,7 @@ def get_preferred_graph(n, values):
 # Note: this will be used in 9 (b) so you can implement it however you
 # like
 
-# DOuble check: is it legit to use min cut?
+# Double check: is it legit to use min cut?
 def matching_or_cset(G):
     DG = gen_di_graph(G)
     min_f, part = nx.minimum_cut(DG, "source", "sink")
@@ -63,7 +63,7 @@ def matching_or_cset(G):
 # which you can assume to just be labeled 0,1,...,n-1 in each case),
 # and values where values[i][j] represents the ith players value for item j,
 # output a market equilibrium consisting of prices and matching
-# (p,M) where player i pays p[i] for item M[i]. 
+# (p,M) where player i pays p[i] for item M[i].
 def market_eq(n, values):
     p = [0]*n
     M = [0]*n
@@ -108,10 +108,97 @@ def vcg(n, m, values):
 # Problem 9c
 ##########################################################
 def problem9c():
-    print("Problem 9c Figure 8.3...")
-    G = generateFigure8_3()
-    s = matching_or_cset()
-    print(s)
+
+    (figure83_n,figure83_values) = generateFigure8_3()
+    (example1_n,example1_values) = generateTestExample1()
+    (example2_n,example2_values) = generateTestExample2()
+    (example3_n,example3_values) = generateTestExample3()
+
+    if (os.path.exists("p9.txt")):
+        os.remove("p9.txt")
+
+    f = open("p9.txt", "a")
+
+    f.write("MATCHING_OR_CSET TESTS\n\n")
+    print("Calling matching_or_cset on Figure 8.3...")
+    f.write("Figure 8.3\n\tInputs: \n")
+    f.write("\t\tn: " + str(figure83_n) + "\n")
+    f.write("\t\tvalues: " + str(figure83_values) + "\n")
+
+    f.write("\tOutputs: ")
+    figure83_preferred_graph = get_preferred_graph(figure83_n,figure83_values)
+    figure83_matching_or_cset = matching_or_cset(figure83_preferred_graph)
+    if (figure83_matching_or_cset[1]):
+        f.write("\t\tConstricted Set: " + figure83_matching_or_cset[0])
+    else:
+        f.write("\t\tPerfect Matching: " + figure83_matching_or_cset[0])
+
+    f.write("\n\n")
+
+
+    print("Calling matching_or_cset on Example 1...")
+    f.write("Test Example 1\nInputs: ")
+    f.write("\n")
+
+    f.write("Outputs: ")
+    f.write("\n\n")
+
+
+    print("Calling matching_or_cset on Example 2...")
+    f.write("Test Example 2\nInputs: ")
+    f.write("\n")
+
+    f.write("Outputs: ")
+    f.write("\n\n")
+
+
+    print("Calling matching_or_cset on Example 3...")
+    f.write("Test Example 3\nInputs: ")
+    f.write("\n")
+
+    f.write("Outputs: ")
+    f.write("\n\n\n")
+
+
+    f.write("MARKET_EQ TESTS\n\n")
+    print("Calling market_eq on Figure 8.3...")
+    f.write("Figure 8.3\nInputs: ")
+    f.write("\n")
+    # figure83_market_eq = market_eq(figure83_n,figure83_values)
+
+    f.write("Outputs: ")
+    f.write("\n\n")
+
+
+    print("Calling market_eq on Example 1...")
+    f.write("Test Example 1\nInputs: ")
+    f.write("\n")
+
+    f.write("Outputs: ")
+    f.write("\n\n")
+
+
+    print("Calling market_eq on Example 2...")
+    f.write("Test Example 2\nInputs: ")
+    f.write("\n")
+
+    f.write("Outputs: ")
+    f.write("\n\n")
+
+
+    print("Calling market_eq on Example 3...")
+    f.write("Test Example 3\nInputs: ")
+    f.write("\n")
+
+    f.write("Outputs: ")
+    f.write("\n\n\n")
+
+
+    # G = generateFigure8_3()
+    # s = matching_or_cset()
+    # print(s)
+
+    f.close()
 
 
 ##########################################################
@@ -124,5 +211,16 @@ def problem10c():
     print(s)
 
 
-# problem9c()
+##########################################################
+# Problem 11b
+##########################################################
+def problem11b():
+    print("Problem 10c Figure 8.3...")
+    G = generateFigure8_3()
+    s = vcg()
+    print(s)
+
+
+problem9c()
 # problem10c()
+# problem11b()
