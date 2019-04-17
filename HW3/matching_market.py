@@ -132,7 +132,6 @@ def problem9c():
     if (figure83_matching_or_cset[1]):
         f.write("\t\Perfect Matching: " + str(figure83_matching_or_cset[0]))
     else:
-        print( figure83_matching_or_cset[0])
         f.write("\t\Constricted Set: " + str(figure83_matching_or_cset[0]))
 
     f.write("\n\n")
