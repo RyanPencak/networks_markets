@@ -128,9 +128,9 @@ def vcg(n, m, values):
 
         # Set the price that player pays p[i] to its externality
         p[player] = new_SV_no_player - SV_no_player
-        print("Price :" + str(p[player]))
+        # print("Price :" + str(p[player]))
 
-    print("p:" + str(p))
+    # print("p:" + str(p))
     return (p,M)
 
 
@@ -466,10 +466,41 @@ def problem10c():
 # Problem 11b
 ##########################################################
 def problem11b():
+    if (os.path.exists("p11.txt")):
+        os.remove("p11.txt")
+
+    f = open("p11.txt", "a")
+
+    print("Problem 11a...")
+    bundle_values = []
+    player_values_for_items = [2,3,47,38,25,8,36,41,12,23,13,13,13,12,30,15,3,16,8,11]
+    for player in range(20):
+        p_values = [i*player_values_for_items[player] for i in range(1,21,1)]
+        bundle_values.append(p_values)
+    print(bundle_values)
+
+    f.write("Problem 11a\n\n")
+    f.write("\tPlayers: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]\n")
+    f.write("\tRandom Player Values for the Item: [2,3,47,38,25,8,36,41,12,23,13,13,13,12,30,15,3,16,8,11]\n")
+    f.write("\tValues of Item Bundles for Each Player: [[1*2,2*2,3*2,...][1*3,2*3,3*3,...][1*47,2*47,3*47,...][1*38,2*38,3*38,...]...]\n\n")
+    f.write("Problem 11b\n\n")
+    f.write("\tInputs: \n")
+    f.write("\t\tn: " + str(len(bundle_values)) + "\n")
+    f.write("\t\tm: " + str(len(bundle_values[0])) + "\n")
+    f.write("\t\tvalues: " + str(bundle_values) + "\n")
+
     print("Problem 11b...")
+    (p_problem11,M_problem11) = vcg(len(bundle_values),len(bundle_values[0]),bundle_values)
+    print("p: " + str(p_problem11))
+    print("M: " + str(M_problem11))
+
+    f.write("\tOutputs: \n")
+    f.write("\t\tp: " + str(p_problem11) + "\n")
+    f.write("\t\tM: " + str(M_problem11) + "\n")
+
     print("Done.")
 
 
-problem9c()
-problem10c()
-# problem11b()
+# problem9c()
+# problem10c()
+problem11b()
