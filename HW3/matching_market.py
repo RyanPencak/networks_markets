@@ -73,12 +73,16 @@ def vcg(n, m, values):
 
     # Store original values
     saved_values = []
-    for player in values:
-        saved_values.append([x for x in player])
+    for i in values:
+        temp_player1 = []
+        for item_value in i:
+            temp_player1.append(item_value)
+        saved_values.append(temp_player1)
 
     # Get market equilibrium
-    print(saved_values)
+    # print("Values: " + str(values))
     (_,M) = market_eq(n, values)
+    # print("M: " + str(M))
 
     # Get social welfare of M
     SV = getSocialVal(saved_values,M)
@@ -91,22 +95,40 @@ def vcg(n, m, values):
         # print("SV no player: " + str(SV_no_player))
 
         # Get values array without current player
-        new_values = [x for i,x in enumerate(saved_values) if i!=player]
+        new_values = []
+        for i in saved_values:
+            temp_player2 = []
+            if (i != player):
+                for item_value in i:
+                    temp_player2.append(item_value)
+                new_values.append(temp_player2)
 
         # Add dummy players or items (items with value 0 or players with 0 value for everything)
         new_values.append([0]*m)
-        # print("New values: " + str(new_values))
+
+        # Store original values before calling market_eq
+        saved_new_values = []
+        for i in new_values:
+            temp_player3 = []
+            for item_value in i:
+                temp_player3.append(item_value)
+            saved_new_values.append(temp_player3)
+
+        # print("Saved new values: " + str(saved_new_values))
 
         # Get new market_eq without current player
         (_,new_M) = market_eq(n, new_values)
         # print("New eq: " + str(new_M))
 
         # Get the social welfare of the market_eq without the current player
-        new_SV_no_player = getSocialVal(new_values,new_M) - saved_values[player][item]
+        new_SV_no_player = getSocialVal(saved_new_values,new_M)
         # print("New social val: " + str(new_SV_no_player))
 
+        # print("Should be the same: " + str(saved_new_values))
+
         # Set the price that player pays p[i] to its externality
-        p[player] = SV_no_player - new_SV_no_player
+        p[player] = new_SV_no_player - SV_no_player
+        print("Price :" + str(p[player]))
 
     print("p:" + str(p))
     return (p,M)
@@ -147,10 +169,10 @@ def get_preferred_graph(n, values):
     return G
 
 # Find and returns social value given a matching M and values
-def getSocialVal(values,M):
+def getSocialVal(vals,M):
     SV = 0
     for player,item in enumerate(M):
-        SV += values[player][item]
+        SV += vals[player][item]
     return SV
 
 # Finds and returns path of max flow
