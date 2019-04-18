@@ -26,6 +26,7 @@ def get_preferred_graph(n, values):
     for i in range(n):
         max_val, count = 0, 0
         idx_of_max_val = count
+        print(values)
         for val in values[i]:
             if val > max_val:
                 max_val = val
@@ -109,10 +110,10 @@ def vcg(n, m, values):
 ##########################################################
 def problem9c():
 
-    (figure83_n,figure83_values) = generateFigure8_3()
-    (example1_n,example1_values) = generateTestExample1()
-    (example2_n,example2_values) = generateTestExample2()
-    (example3_n,example3_values) = generateTestExample3()
+    (figure83_values) = generateFigure8_3()
+    (example1_values) = generateTestExample1()
+    (example2_values) = generateTestExample2()
+    (example3_values) = generateTestExample3()
 
     if (os.path.exists("p9.txt")):
         os.remove("p9.txt")
@@ -122,17 +123,16 @@ def problem9c():
     f.write("MATCHING_OR_CSET TESTS\n\n")
     print("Calling matching_or_cset on Figure 8.3...")
     f.write("Figure 8.3\n\tInputs: \n")
-    f.write("\t\tn: " + str(figure83_n) + "\n")
+    f.write("\t\tn: " + str(len(figure83_values)) + "\n")
     f.write("\t\tvalues: " + str(figure83_values) + "\n")
 
-    f.write("\tOutputs: ")
-    figure83_preferred_graph = get_preferred_graph(figure83_n,figure83_values)
+    f.write("\tOutputs: \n")
+    figure83_preferred_graph = get_preferred_graph(len(figure83_values),figure83_values)
     figure83_matching_or_cset = matching_or_cset(figure83_preferred_graph)
-    nx.draw(figure83_preferred_graph)
     if (figure83_matching_or_cset[1]):
-        f.write("\t\Perfect Matching: " + str(figure83_matching_or_cset[0]))
+        f.write("\t\tConstricted Set: " + str(figure83_matching_or_cset[0]))
     else:
-        f.write("\t\Constricted Set: " + str(figure83_matching_or_cset[0]))
+        f.write("\t\tPerfect Matching: " + str(figure83_matching_or_cset[0]))
 
     f.write("\n\n")
 
@@ -194,11 +194,6 @@ def problem9c():
     f.write("Outputs: ")
     f.write("\n\n\n")
 
-
-    # G = generateFigure8_3()
-    # s = matching_or_cset()
-    # print(s)
-
     f.close()
 
 
@@ -206,10 +201,54 @@ def problem9c():
 # Problem 10c
 ##########################################################
 def problem10c():
-    print("Problem 10c Figure 8.3...")
-    G = generateFigure8_3()
-    s = vcg()
-    print(s)
+    if (os.path.exists("p10.txt")):
+        os.remove("p10.txt")
+
+    f = open("p10.txt", "a")
+
+    f.write("VCG TESTS\n\n")
+    print("Calling vcg on Figure 8.3...")
+    f.write("Figure 8.3\n\tInputs: \n")
+    f.write("\t\tn: " + str(len(figure83_values)) + "\n")
+    f.write("\t\tm: " + str(len(figure83_values[0])) + "\n")
+    f.write("\t\tvalues: " + str(figure83_values) + "\n")
+
+    f.write("\tOutputs: ")
+    figure83_vcg = vcg(len(figure83_values),len(figure83_values[0]),figure83_values)
+    f.write("\t\tp: " + figure83_vcg[0])
+    f.write("\t\tM: " + figure83_vcg[1])
+
+    f.write("\n\n")
+
+
+    print("Calling matching_or_cset on Example 1...")
+    f.write("Test Example 1\nInputs: ")
+    f.write("\n")
+
+    f.write("Outputs: ")
+    f.write("\n\n")
+
+
+    print("Calling matching_or_cset on Example 2...")
+    f.write("Test Example 2\nInputs: ")
+    f.write("\n")
+
+    f.write("Outputs: ")
+    f.write("\n\n")
+
+
+    print("Calling matching_or_cset on Example 3...")
+    f.write("Test Example 3\nInputs: ")
+    f.write("\n")
+
+    f.write("Outputs: ")
+    f.write("\n")
+
+    f.close()
+
+    # G = generateFigure8_3()
+    # s = vcg()
+    # print(s)
 
 
 ##########################################################

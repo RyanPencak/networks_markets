@@ -5,3 +5,37 @@ Figure 8.3
 		n: 3
 		values: [[4, 12, 5], [7, 10, 9], [7, 7, 10]]
 	Outputs: 
+		Perfect Matching: ['player_2', 'player_1', 'player_0']
+
+Test Example 1
+Inputs: 
+Outputs: 
+
+Test Example 2
+Inputs: 
+Outputs: 
+
+Test Example 3
+Inputs: 
+Outputs: 
+
+
+MARKET_EQ TESTS
+
+Figure 8.3
+Inputs: 
+Outputs: 
+
+Test Example 1
+Inputs: 
+Outputs: 
+
+Test Example 2
+Inputs: 
+Outputs: 
+
+Test Example 3
+Inputs: 
+Outputs: 
+
+
