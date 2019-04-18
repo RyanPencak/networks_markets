@@ -74,7 +74,6 @@ def market_eq(n, values):
             for edge in m_or_c[0]:
                 M[int(edge[0].split("_")[1])] = int(edge[1].split("_")[1])
             return (p,M)
-        print("MISS")
         neighbors_incremented = []
         for constrict in m_or_c[0]:
             for neighbor in preferred[constrict]:
@@ -102,11 +101,42 @@ def market_eq(n, values):
 def vcg(n, m, values):
     p = [0]*n
     M = [0]*n
+
+    # Store original values
+    saved_values = []
+    for player in values:
+        saved_values.append([x for x in player])
+
+    # Get market equilibrium
+    print(saved_values)
     (_,M) = market_eq(n, values)
 
+    # Get social welfare of M
+    SV = getSocialVal(saved_values,M)
+    print("Social val: " + str(SV))
 
+    # Loop through players to price items
+    for player,item in enumerate(M):
+        SV_no_player = SV - saved_values[player][item]
+        print("SV no player: " + str(SV_no_player))
+        new_values = [j for i,j in enumerate(saved_values) if i!=player]
+        print("New values: " + str(new_values))
+        (_,new_M) = market_eq(n-1, new_values)
+        print("New eq: " + str(new_M))
+        new_SV_no_player = getSocialVal(new_values,new_M) - saved_values[player][item]
+        print("New social val: " + str(new_SV_no_player))
+        p[player] = SV_no_player - new_SV_no_player
 
+    print("p:" + str(p))
     return (p,M)
+
+
+# Find and returns social value given a matching M and values
+def getSocialVal(values,M):
+    SV = 0
+    for player,item in enumerate(M):
+        SV += values[player][item]
+    return SV
 
 
 ##########################################################
@@ -192,27 +222,27 @@ def problem9c():
 
     f.write("MARKET_EQ TESTS\n\n")
     print("Calling market_eq on Figure 8.3...")
-    f.write("Test Example 3\nInputs: \n")
+    f.write("Figure 8.3\n\tInputs: \n")
     f.write("\t\tn: " + str(len(figure83_values)) + "\n")
     f.write("\t\tvalues: " + str(figure83_values) + "\n")
 
     f.write("\tOutputs: \n")
     figure83_market_eq = market_eq(len(figure83_values),figure83_values)
-    f.write("\t\tp: " + str(figure83_market_eq) + "\n")
-    f.write("\t\tM: " + str(figure83_market_eq))
+    f.write("\t\tp: " + str(figure83_market_eq[0]) + "\n")
+    f.write("\t\tM: " + str(figure83_market_eq[1]))
     f.write("\n\n")
     print("Done.")
 
 
     print("Calling market_eq on Example 1...")
-    f.write("Test Example 1\nInputs: \n")
+    f.write("Test Example 1\n\tInputs: \n")
     f.write("\t\tn: " + str(len(example1_values)) + "\n")
     f.write("\t\tvalues: " + str(example1_values) + "\n")
 
     f.write("\tOutputs: \n")
     example1_market_eq = market_eq(len(example1_values),example1_values)
-    f.write("\t\tp: " + str(example1_market_eq) + "\n")
-    f.write("\t\tM: " + str(example1_market_eq))
+    f.write("\t\tp: " + str(example1_market_eq[0]) + "\n")
+    f.write("\t\tM: " + str(example1_market_eq[1]))
     f.write("\n\n")
     print("Done.")
 
@@ -255,24 +285,24 @@ def problem10c():
     example2_values = generateTestExample2()
     example3_values = generateTestExample3()
 
-    # if (os.path.exists("p10.txt")):
-    #     os.remove("p10.txt")
-    #
-    # f = open("p10.txt", "a")
-    #
-    # f.write("VCG TESTS\n\n")
-    # print("Calling vcg on Figure 8.3...")
-    # f.write("Figure 8.3\n\tInputs: \n")
-    # f.write("\t\tn: " + str(len(figure83_values)) + "\n")
-    # f.write("\t\tm: " + str(len(figure83_values[0])) + "\n")
-    # f.write("\t\tvalues: " + str(figure83_values) + "\n")
-    #
-    # f.write("\tOutputs: ")
-    # figure83_vcg = vcg(len(figure83_values),len(figure83_values[0]),figure83_values)
-    # f.write("\t\tp: " + figure83_vcg[0])
-    # f.write("\t\tM: " + figure83_vcg[1])
-    #
-    # f.write("\n\n")
+    if (os.path.exists("p10.txt")):
+        os.remove("p10.txt")
+
+    f = open("p10.txt", "a")
+
+    f.write("VCG TESTS\n\n")
+    print("Calling vcg on Figure 8.3...")
+    f.write("Figure 8.3\n\tInputs: \n")
+    f.write("\t\tn: " + str(len(figure83_values)) + "\n")
+    f.write("\t\tm: " + str(len(figure83_values[0])) + "\n")
+    f.write("\t\tvalues: " + str(figure83_values) + "\n")
+
+    f.write("\tOutputs: \n")
+    figure83_vcg = vcg(len(figure83_values),len(figure83_values[0]),figure83_values)
+    f.write("\t\tp: " + str(figure83_vcg[0]) + "\n")
+    f.write("\t\tM: " + str(figure83_vcg[1]) + "\n")
+
+    f.write("\n\n")
     #
     #
     # print("Calling matching_or_cset on Example 1...")
@@ -281,7 +311,7 @@ def problem10c():
     #
     # f.write("Outputs: ")
     # f.write("\n\n")
-    # print("Done.")
+    print("Done.")
     #
     #
     # print("Calling matching_or_cset on Example 2...")
@@ -299,11 +329,7 @@ def problem10c():
     # f.write("Outputs: ")
     # f.write("\n")
     #
-    # f.close()
-
-    # G = generateFigure8_3()
-    # s = vcg()
-    # print(s)
+    f.close()
 
 
 ##########################################################
