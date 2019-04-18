@@ -8,35 +8,6 @@ import networkx as nx
 from networkx.algorithms.flow import shortest_augmenting_path
 from helper_functions import *
 
-def gen_di_graph(G):
-    DG = nx.DiGraph()
-    for n, d in G.nodes(data=True):
-        if d["bipartite"] == 0:
-            DG.add_edge("source", n, capacity=1)
-            DG.nodes[n]["bipartite"] = 0
-            for adj_node in G[n]:
-                DG.add_edge(n, adj_node)
-        elif d["bipartite"] == 1:
-            DG.add_edge(n, "sink", capacity=1)
-            DG.nodes[n]["bipartite"] = 1
-    return DG
-
-def get_preferred_graph(n, values):
-    G = nx.Graph()
-    for i in range(n):
-        max_val, count = 0, 0
-        idx_of_max_val = count
-        for val in values[i]:
-            if val > max_val:
-                max_val = val
-                idx_of_max_val = count
-            count += 1
-        player = "player_{}".format(i)
-        item = "item_{}".format(idx_of_max_val)
-        G.add_edge(player, item)
-        G.nodes[player]["bipartite"], G.nodes[item]["bipartite"] = 0, 1
-    return G
-
 # 9 (a)
 # implement an algorithm that given a bipartite graph G, outputs
 # either a perfect matching or a constricted set
@@ -74,6 +45,9 @@ def market_eq(n, values):
             for edge in m_or_c[0]:
                 M[int(edge[0].split("_")[1])] = int(edge[1].split("_")[1])
             return (p,M)
+        # print(values)
+        # print("--"*10)
+        # print(m_or_c[0])
         neighbors_incremented = []
         for constrict in m_or_c[0]:
             for neighbor in preferred[constrict]:
@@ -89,6 +63,8 @@ def market_eq(n, values):
         if count == len(p):
             for i in range(len(p)):
                 p[i] -= 1
+                for j in range(n):
+                    values[j][i] += 1
 
 
 
@@ -113,23 +89,69 @@ def vcg(n, m, values):
 
     # Get social welfare of M
     SV = getSocialVal(saved_values,M)
-    print("Social val: " + str(SV))
 
     # Loop through players to price items
     for player,item in enumerate(M):
+        # Get social welfare not including current player
         SV_no_player = SV - saved_values[player][item]
-        print("SV no player: " + str(SV_no_player))
-        new_values = [j for i,j in enumerate(saved_values) if i!=player]
-        print("New values: " + str(new_values))
-        (_,new_M) = market_eq(n-1, new_values)
-        print("New eq: " + str(new_M))
+        # print("Social val: " + str(SV))
+        # print("SV no player: " + str(SV_no_player))
+
+        # Get values array without current player
+        new_values = [x for i,x in enumerate(saved_values) if i!=player]
+
+        # Add dummy players or items (items with value 0 or players with 0 value for everything)
+        new_values.append([0]*m)
+        # print("New values: " + str(new_values))
+
+        # Get new market_eq without current player
+        (_,new_M) = market_eq(n, new_values)
+        # print("New eq: " + str(new_M))
+
+        # Get the social welfare of the market_eq without the current player
         new_SV_no_player = getSocialVal(new_values,new_M) - saved_values[player][item]
-        print("New social val: " + str(new_SV_no_player))
+        # print("New social val: " + str(new_SV_no_player))
+
+        # Set the price that player pays p[i] to its externality
         p[player] = SV_no_player - new_SV_no_player
 
     print("p:" + str(p))
     return (p,M)
 
+
+# Takes in a graph and returns digraph representation
+def gen_di_graph(G):
+    DG = nx.DiGraph()
+    for n, d in G.nodes(data=True):
+        if d["bipartite"] == 0:
+            DG.add_edge("source", n, capacity=1)
+            DG.nodes[n]["bipartite"] = 0
+            for adj_node in G[n]:
+                DG.add_edge(n, adj_node)
+        elif d["bipartite"] == 1:
+            DG.add_edge(n, "sink", capacity=1)
+            DG.nodes[n]["bipartite"] = 1
+    return DG
+
+# Takes number of players n and values array, returning the preferred graph
+def get_preferred_graph(n, values):
+    G = nx.Graph()
+    for i in range(n):
+        max_val, count = 0, 0
+        idx_of_max_val = [count]
+        for val in values[i]:
+            if val > max_val:
+                max_val = val
+                idx_of_max_val = [count]
+            elif val == max_val:
+                idx_of_max_val.append(count)
+            count += 1
+        player = "player_{}".format(i)
+        for i in idx_of_max_val:
+            item ="item_{}".format(i)
+            G.add_edge(player, item)
+            G.nodes[player]["bipartite"], G.nodes[item]["bipartite"] = 0, 1
+    return G
 
 # Find and returns social value given a matching M and values
 def getSocialVal(values,M):
@@ -137,6 +159,81 @@ def getSocialVal(values,M):
     for player,item in enumerate(M):
         SV += values[player][item]
     return SV
+
+# Finds and returns path of max flow
+def max_flow(G, s, t):
+
+    max_flow = 0
+
+    # Get a path from s to t
+    path = BFS(G, s, t)
+
+    residual = G
+
+    # While there is a path from source to sink
+    while (path != None):
+
+        # Push maximum flow along this path (minimum cap of edges)
+        path_flow = float("Inf")
+        for i in range(0, len(path)-1):
+            if (residual[path[i]][path[i+1]]['cap'] < path_flow):
+                path_flow = residual[path[i]][path[i+1]]['cap']
+
+        # Increase max flow by max flow of current path
+        max_flow += path_flow
+
+        # Decrease capacity of each edge where flow was added
+        # Create a reverse edge with capacity equal to the flow passed through that edge
+        for i in range(0, len(path)-1):
+            residual[path[i]][path[i+1]]['cap'] -= path_flow
+
+            if (residual[path[i]][path[i+1]]['cap'] == 0):
+                residual.remove_edge(path[i],path[i+1])
+
+            if (residual.has_edge(path[i+1],path[i])):
+                residual[path[i+1]][path[i]]['cap'] += path_flow
+            else:
+                residual.add_edge(path[i+1], path[i])
+                residual[path[i+1]][path[i]]['cap'] = path_flow
+
+        # plt.plot()
+        # nx.draw(residual, with_labels=True, font_weight='bold')
+        # plt.show()
+
+        # Find a path from source to sink in new residual graph
+        path = BFS(residual, s, t)
+
+    return max_flow
+
+# Breadth-First-Search algorithm
+def BFS(G,i,j):
+    # Check if source is target
+    if (i == j):
+      return None
+
+    G.nodes[i]['previous'] = None
+
+    discovered = []
+    queue = [i]
+
+    path = []
+
+    while queue:
+        temp = queue.pop(0)
+        discovered.append(temp)
+        neighbors = [n for n in list(G[temp]) if n not in queue and n not in discovered]
+        for neighbor in neighbors:
+            G.nodes[neighbor]['previous'] = temp
+        if j in neighbors:
+            n = j
+            while (G.nodes[n]['previous'] != None):
+                path.insert(0,n)
+                n = G.nodes[n]['previous']
+            path.insert(0,i)
+            return path
+        queue.extend(neighbors)
+
+    return None
 
 
 ##########################################################
@@ -247,30 +344,30 @@ def problem9c():
     print("Done.")
 
 
-    # print("Calling market_eq on Example 2...")
-    # f.write("Test Example 2\nInputs: \n")
-    # f.write("\t\tn: " + str(len(example2_values)) + "\n")
-    # f.write("\t\tvalues: " + str(example2_values) + "\n")
-    #
-    # f.write("\tOutputs: \n")
-    # example2_market_eq = market_eq(len(example2_values),example2_values)
-    # f.write("\t\tp: " + str(example2_market_eq) + "\n")
-    # f.write("\t\tM: " + str(example2_market_eq))
-    # f.write("\n\n")
-    # print("Done.")
-    #
-    #
-    # print("Calling market_eq on Example 3...")
-    # f.write("Test Example 3\nInputs: \n")
-    # f.write("\t\tn: " + str(len(example3_values)) + "\n")
-    # f.write("\t\tvalues: " + str(example3_values) + "\n")
-    #
-    # f.write("\tOutputs: \n")
-    # example3_market_eq = market_eq(len(example3_values),example3_values)
-    # f.write("\t\tp: " + str(example3_market_eq) + "\n")
-    # f.write("\t\tM: " + str(example3_market_eq))
-    # f.write("\n\n\n")
-    # print("Done.")
+    print("Calling market_eq on Example 2...")
+    f.write("Test Example 2\nInputs: \n")
+    f.write("\t\tn: " + str(len(example2_values)) + "\n")
+    f.write("\t\tvalues: " + str(example2_values) + "\n")
+
+    f.write("\tOutputs: \n")
+    example2_market_eq = market_eq(len(example2_values),example2_values)
+    f.write("\t\tp: " + str(example2_market_eq) + "\n")
+    f.write("\t\tM: " + str(example2_market_eq))
+    f.write("\n\n")
+    print("Done.")
+
+
+    print("Calling market_eq on Example 3...")
+    f.write("Test Example 3\nInputs: \n")
+    f.write("\t\tn: " + str(len(example3_values)) + "\n")
+    f.write("\t\tvalues: " + str(example3_values) + "\n")
+
+    f.write("\tOutputs: \n")
+    example3_market_eq = market_eq(len(example3_values),example3_values)
+    f.write("\t\tp: " + str(example3_market_eq) + "\n")
+    f.write("\t\tM: " + str(example3_market_eq))
+    f.write("\n\n\n")
+    print("Done.")
 
     f.close()
 
@@ -303,32 +400,50 @@ def problem10c():
     f.write("\t\tM: " + str(figure83_vcg[1]) + "\n")
 
     f.write("\n\n")
-    #
-    #
-    # print("Calling matching_or_cset on Example 1...")
-    # f.write("Test Example 1\nInputs: ")
-    # f.write("\n")
-    #
-    # f.write("Outputs: ")
-    # f.write("\n\n")
+
+
+    print("Calling vcg on Example 1...")
+    f.write("Test Example 1\n\tInputs: \n")
+    f.write("\t\tn: " + str(len(example1_values)) + "\n")
+    f.write("\t\tm: " + str(len(example1_values[0])) + "\n")
+    f.write("\t\tvalues: " + str(example1_values) + "\n")
+
+    f.write("\tOutputs: \n")
+    example1_vcg = vcg(len(example1_values),len(example1_values[0]),example1_values)
+    f.write("\t\tp: " + str(example1_vcg[0]) + "\n")
+    f.write("\t\tM: " + str(example1_vcg[1]) + "\n")
+
+    f.write("\n\n")
+
+
+    print("Calling vcg on Example 2...")
+    f.write("Test Example 2\n\tInputs: \n")
+    f.write("\t\tn: " + str(len(example2_values)) + "\n")
+    f.write("\t\tm: " + str(len(example2_values[0])) + "\n")
+    f.write("\t\tvalues: " + str(example2_values) + "\n")
+
+    f.write("\tOutputs: \n")
+    example2_vcg = vcg(len(example2_values),len(example2_values[0]),example2_values)
+    f.write("\t\tp: " + str(example2_vcg[0]) + "\n")
+    f.write("\t\tM: " + str(example2_vcg[1]) + "\n")
+
+    f.write("\n\n")
+
+
+    print("Calling vcg on Example 3...")
+    f.write("Test Example 3\n\tInputs: \n")
+    f.write("\t\tn: " + str(len(example3_values)) + "\n")
+    f.write("\t\tm: " + str(len(example3_values[0])) + "\n")
+    f.write("\t\tvalues: " + str(example3_values) + "\n")
+
+    f.write("\tOutputs: \n")
+    example3_vcg = vcg(len(example3_values),len(example3_values[0]),example3_values)
+    f.write("\t\tp: " + str(example3_vcg[0]) + "\n")
+    f.write("\t\tM: " + str(example3_vcg[1]) + "\n")
+
+    f.write("\n\n")
     print("Done.")
-    #
-    #
-    # print("Calling matching_or_cset on Example 2...")
-    # f.write("Test Example 2\nInputs: ")
-    # f.write("\n")
-    #
-    # f.write("Outputs: ")
-    # f.write("\n\n")
-    #
-    #
-    # print("Calling matching_or_cset on Example 3...")
-    # f.write("Test Example 3\nInputs: ")
-    # f.write("\n")
-    #
-    # f.write("Outputs: ")
-    # f.write("\n")
-    #
+
     f.close()
 
 
@@ -336,10 +451,8 @@ def problem10c():
 # Problem 11b
 ##########################################################
 def problem11b():
-    print("Problem 10c Figure 8.3...")
-    G = generateFigure8_3()
-    s = vcg()
-    print(s)
+    print("Problem 11b...")
+    print("Done.")
 
 
 problem9c()
