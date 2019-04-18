@@ -26,7 +26,6 @@ def get_preferred_graph(n, values):
     for i in range(n):
         max_val, count = 0, 0
         idx_of_max_val = count
-        print(values)
         for val in values[i]:
             if val > max_val:
                 max_val = val
@@ -75,6 +74,7 @@ def market_eq(n, values):
             for edge in m_or_c[0]:
                 M[int(edge[0].split("_")[1])] = int(edge[1].split("_")[1])
             return (p,M)
+        print("MISS")
         neighbors_incremented = []
         for constrict in m_or_c[0]:
             for neighbor in preferred[constrict]:
@@ -102,6 +102,10 @@ def market_eq(n, values):
 def vcg(n, m, values):
     p = [0]*n
     M = [0]*n
+    (_,M) = market_eq(n, values)
+
+
+
     return (p,M)
 
 
@@ -110,10 +114,10 @@ def vcg(n, m, values):
 ##########################################################
 def problem9c():
 
-    (figure83_values) = generateFigure8_3()
-    (example1_values) = generateTestExample1()
-    (example2_values) = generateTestExample2()
-    (example3_values) = generateTestExample3()
+    figure83_values = generateFigure8_3()
+    example1_values = generateTestExample1()
+    example2_values = generateTestExample2()
+    example3_values = generateTestExample3()
 
     if (os.path.exists("p9.txt")):
         os.remove("p9.txt")
@@ -130,69 +134,113 @@ def problem9c():
     figure83_preferred_graph = get_preferred_graph(len(figure83_values),figure83_values)
     figure83_matching_or_cset = matching_or_cset(figure83_preferred_graph)
     if (figure83_matching_or_cset[1]):
-        f.write("\t\tConstricted Set: " + str(figure83_matching_or_cset[0]))
-    else:
         f.write("\t\tPerfect Matching: " + str(figure83_matching_or_cset[0]))
+    else:
+        f.write("\t\tConstricted Set: " + str(figure83_matching_or_cset[0]))
 
     f.write("\n\n")
+    print("Done.")
 
 
     print("Calling matching_or_cset on Example 1...")
-    f.write("Test Example 1\nInputs: ")
-    f.write("\n")
+    f.write("Test Example 1\nInputs: \n")
+    f.write("\t\tn: " + str(len(example1_values)) + "\n")
+    f.write("\t\tvalues: " + str(example1_values) + "\n")
 
-    f.write("Outputs: ")
+    f.write("\tOutputs: \n")
+    example1_preferred_graph = get_preferred_graph(len(example1_values),example1_values)
+    example1_matching_or_cset = matching_or_cset(example1_preferred_graph)
+    if (example1_matching_or_cset[1]):
+        f.write("\t\tPerfect Matching: " + str(example1_matching_or_cset[0]))
+    else:
+        f.write("\t\tConstricted Set: " + str(example1_matching_or_cset[0]))
     f.write("\n\n")
+    print("Done.")
 
 
     print("Calling matching_or_cset on Example 2...")
-    f.write("Test Example 2\nInputs: ")
-    f.write("\n")
+    f.write("Test Example 2\nInputs: \n")
+    f.write("\t\tn: " + str(len(example2_values)) + "\n")
+    f.write("\t\tvalues: " + str(example2_values) + "\n")
 
-    f.write("Outputs: ")
+    f.write("\tOutputs: \n")
+    example2_preferred_graph = get_preferred_graph(len(example2_values),example2_values)
+    example2_matching_or_cset = matching_or_cset(example2_preferred_graph)
+    if (example2_matching_or_cset[1]):
+        f.write("\t\tPerfect Matching: " + str(example2_matching_or_cset[0]))
+    else:
+        f.write("\t\tConstricted Set: " + str(example2_matching_or_cset[0]))
     f.write("\n\n")
+    print("Done.")
 
 
     print("Calling matching_or_cset on Example 3...")
-    f.write("Test Example 3\nInputs: ")
-    f.write("\n")
+    f.write("Test Example 3\nInputs: \n")
+    f.write("\t\tn: " + str(len(example3_values)) + "\n")
+    f.write("\t\tvalues: " + str(example3_values) + "\n")
 
-    f.write("Outputs: ")
+    f.write("\tOutputs: \n")
+    example3_preferred_graph = get_preferred_graph(len(example3_values),example3_values)
+    example3_matching_or_cset = matching_or_cset(example3_preferred_graph)
+    if (example3_matching_or_cset[1]):
+        f.write("\t\tPerfect Matching: " + str(example3_matching_or_cset[0]))
+    else:
+        f.write("\t\tConstricted Set: " + str(example3_matching_or_cset[0]))
     f.write("\n\n\n")
+    print("Done.")
 
 
     f.write("MARKET_EQ TESTS\n\n")
     print("Calling market_eq on Figure 8.3...")
-    f.write("Figure 8.3\nInputs: ")
-    f.write("\n")
-    # figure83_market_eq = market_eq(figure83_n,figure83_values)
+    f.write("Test Example 3\nInputs: \n")
+    f.write("\t\tn: " + str(len(figure83_values)) + "\n")
+    f.write("\t\tvalues: " + str(figure83_values) + "\n")
 
-    f.write("Outputs: ")
+    f.write("\tOutputs: \n")
+    figure83_market_eq = market_eq(len(figure83_values),figure83_values)
+    f.write("\t\tp: " + str(figure83_market_eq) + "\n")
+    f.write("\t\tM: " + str(figure83_market_eq))
     f.write("\n\n")
+    print("Done.")
 
 
     print("Calling market_eq on Example 1...")
-    f.write("Test Example 1\nInputs: ")
-    f.write("\n")
+    f.write("Test Example 1\nInputs: \n")
+    f.write("\t\tn: " + str(len(example1_values)) + "\n")
+    f.write("\t\tvalues: " + str(example1_values) + "\n")
 
-    f.write("Outputs: ")
+    f.write("\tOutputs: \n")
+    example1_market_eq = market_eq(len(example1_values),example1_values)
+    f.write("\t\tp: " + str(example1_market_eq) + "\n")
+    f.write("\t\tM: " + str(example1_market_eq))
     f.write("\n\n")
+    print("Done.")
 
 
-    print("Calling market_eq on Example 2...")
-    f.write("Test Example 2\nInputs: ")
-    f.write("\n")
-
-    f.write("Outputs: ")
-    f.write("\n\n")
-
-
-    print("Calling market_eq on Example 3...")
-    f.write("Test Example 3\nInputs: ")
-    f.write("\n")
-
-    f.write("Outputs: ")
-    f.write("\n\n\n")
+    # print("Calling market_eq on Example 2...")
+    # f.write("Test Example 2\nInputs: \n")
+    # f.write("\t\tn: " + str(len(example2_values)) + "\n")
+    # f.write("\t\tvalues: " + str(example2_values) + "\n")
+    #
+    # f.write("\tOutputs: \n")
+    # example2_market_eq = market_eq(len(example2_values),example2_values)
+    # f.write("\t\tp: " + str(example2_market_eq) + "\n")
+    # f.write("\t\tM: " + str(example2_market_eq))
+    # f.write("\n\n")
+    # print("Done.")
+    #
+    #
+    # print("Calling market_eq on Example 3...")
+    # f.write("Test Example 3\nInputs: \n")
+    # f.write("\t\tn: " + str(len(example3_values)) + "\n")
+    # f.write("\t\tvalues: " + str(example3_values) + "\n")
+    #
+    # f.write("\tOutputs: \n")
+    # example3_market_eq = market_eq(len(example3_values),example3_values)
+    # f.write("\t\tp: " + str(example3_market_eq) + "\n")
+    # f.write("\t\tM: " + str(example3_market_eq))
+    # f.write("\n\n\n")
+    # print("Done.")
 
     f.close()
 
@@ -201,50 +249,57 @@ def problem9c():
 # Problem 10c
 ##########################################################
 def problem10c():
-    if (os.path.exists("p10.txt")):
-        os.remove("p10.txt")
 
-    f = open("p10.txt", "a")
+    figure83_values = generateFigure8_3()
+    example1_values = generateTestExample1()
+    example2_values = generateTestExample2()
+    example3_values = generateTestExample3()
 
-    f.write("VCG TESTS\n\n")
-    print("Calling vcg on Figure 8.3...")
-    f.write("Figure 8.3\n\tInputs: \n")
-    f.write("\t\tn: " + str(len(figure83_values)) + "\n")
-    f.write("\t\tm: " + str(len(figure83_values[0])) + "\n")
-    f.write("\t\tvalues: " + str(figure83_values) + "\n")
-
-    f.write("\tOutputs: ")
-    figure83_vcg = vcg(len(figure83_values),len(figure83_values[0]),figure83_values)
-    f.write("\t\tp: " + figure83_vcg[0])
-    f.write("\t\tM: " + figure83_vcg[1])
-
-    f.write("\n\n")
-
-
-    print("Calling matching_or_cset on Example 1...")
-    f.write("Test Example 1\nInputs: ")
-    f.write("\n")
-
-    f.write("Outputs: ")
-    f.write("\n\n")
-
-
-    print("Calling matching_or_cset on Example 2...")
-    f.write("Test Example 2\nInputs: ")
-    f.write("\n")
-
-    f.write("Outputs: ")
-    f.write("\n\n")
-
-
-    print("Calling matching_or_cset on Example 3...")
-    f.write("Test Example 3\nInputs: ")
-    f.write("\n")
-
-    f.write("Outputs: ")
-    f.write("\n")
-
-    f.close()
+    # if (os.path.exists("p10.txt")):
+    #     os.remove("p10.txt")
+    #
+    # f = open("p10.txt", "a")
+    #
+    # f.write("VCG TESTS\n\n")
+    # print("Calling vcg on Figure 8.3...")
+    # f.write("Figure 8.3\n\tInputs: \n")
+    # f.write("\t\tn: " + str(len(figure83_values)) + "\n")
+    # f.write("\t\tm: " + str(len(figure83_values[0])) + "\n")
+    # f.write("\t\tvalues: " + str(figure83_values) + "\n")
+    #
+    # f.write("\tOutputs: ")
+    # figure83_vcg = vcg(len(figure83_values),len(figure83_values[0]),figure83_values)
+    # f.write("\t\tp: " + figure83_vcg[0])
+    # f.write("\t\tM: " + figure83_vcg[1])
+    #
+    # f.write("\n\n")
+    #
+    #
+    # print("Calling matching_or_cset on Example 1...")
+    # f.write("Test Example 1\nInputs: ")
+    # f.write("\n")
+    #
+    # f.write("Outputs: ")
+    # f.write("\n\n")
+    # print("Done.")
+    #
+    #
+    # print("Calling matching_or_cset on Example 2...")
+    # f.write("Test Example 2\nInputs: ")
+    # f.write("\n")
+    #
+    # f.write("Outputs: ")
+    # f.write("\n\n")
+    #
+    #
+    # print("Calling matching_or_cset on Example 3...")
+    # f.write("Test Example 3\nInputs: ")
+    # f.write("\n")
+    #
+    # f.write("Outputs: ")
+    # f.write("\n")
+    #
+    # f.close()
 
     # G = generateFigure8_3()
     # s = vcg()
@@ -262,5 +317,5 @@ def problem11b():
 
 
 problem9c()
-# problem10c()
+problem10c()
 # problem11b()
