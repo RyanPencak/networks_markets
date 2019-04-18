@@ -13,8 +13,6 @@ from helper_functions import *
 # either a perfect matching or a constricted set
 # Note: this will be used in 9 (b) so you can implement it however you
 # like
-
-# Double check: is it legit to use min cut?
 def matching_or_cset(G):
     DG = gen_di_graph(G)
     min_f, part = nx.minimum_cut(DG, "source", "sink")
