@@ -25,16 +25,19 @@ def get_preferred_graph(n, values):
     G = nx.Graph()
     for i in range(n):
         max_val, count = 0, 0
-        idx_of_max_val = count
+        idx_of_max_val = [count]
         for val in values[i]:
             if val > max_val:
                 max_val = val
-                idx_of_max_val = count
+                idx_of_max_val = [count]
+            elif val == max_val:
+                idx_of_max_val.append(count)
             count += 1
         player = "player_{}".format(i)
-        item = "item_{}".format(idx_of_max_val)
-        G.add_edge(player, item)
-        G.nodes[player]["bipartite"], G.nodes[item]["bipartite"] = 0, 1
+        for i in idx_of_max_val:
+            item ="item_{}".format(i)
+            G.add_edge(player, item)
+            G.nodes[player]["bipartite"], G.nodes[item]["bipartite"] = 0, 1
     return G
 
 # 9 (a)
@@ -74,7 +77,9 @@ def market_eq(n, values):
             for edge in m_or_c[0]:
                 M[int(edge[0].split("_")[1])] = int(edge[1].split("_")[1])
             return (p,M)
-        print("MISS")
+        # print(values)
+        # print("--"*10)
+        # print(m_or_c[0])
         neighbors_incremented = []
         for constrict in m_or_c[0]:
             for neighbor in preferred[constrict]:
@@ -90,6 +95,8 @@ def market_eq(n, values):
         if count == len(p):
             for i in range(len(p)):
                 p[i] -= 1
+                for j in range(n):
+                    values[j][i] += 1
 
 
 
@@ -202,6 +209,7 @@ def problem9c():
     f.write("\t\tM: " + str(figure83_market_eq))
     f.write("\n\n")
     print("Done.")
+    print(str(figure83_market_eq))
 
 
     print("Calling market_eq on Example 1...")
@@ -217,17 +225,17 @@ def problem9c():
     print("Done.")
 
 
-    # print("Calling market_eq on Example 2...")
-    # f.write("Test Example 2\nInputs: \n")
-    # f.write("\t\tn: " + str(len(example2_values)) + "\n")
-    # f.write("\t\tvalues: " + str(example2_values) + "\n")
+    print("Calling market_eq on Example 2...")
+    f.write("Test Example 2\nInputs: \n")
+    f.write("\t\tn: " + str(len(example2_values)) + "\n")
+    f.write("\t\tvalues: " + str(example2_values) + "\n")
     #
-    # f.write("\tOutputs: \n")
-    # example2_market_eq = market_eq(len(example2_values),example2_values)
-    # f.write("\t\tp: " + str(example2_market_eq) + "\n")
-    # f.write("\t\tM: " + str(example2_market_eq))
-    # f.write("\n\n")
-    # print("Done.")
+    f.write("\tOutputs: \n")
+    example2_market_eq = market_eq(len(example2_values),example2_values)
+    f.write("\t\tp: " + str(example2_market_eq) + "\n")
+    f.write("\t\tM: " + str(example2_market_eq))
+    f.write("\n\n")
+    print("Done.")
     #
     #
     # print("Calling market_eq on Example 3...")
