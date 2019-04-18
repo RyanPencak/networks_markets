@@ -64,8 +64,6 @@ def market_eq(n, values):
                 for j in range(n):
                     values[j][i] += 1
 
-
-
 # 10 (b)
 # Given n players 0,...,n-1 and m items 0,...,m-1 and valuations
 # values such that values[i][j] is player i's valuation for item j,
