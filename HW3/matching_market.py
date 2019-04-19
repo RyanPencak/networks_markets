@@ -34,8 +34,8 @@ def get_preferred_graph(n, values):
                 idx_of_max_val.append(count)
             count += 1
         player = "player_{}".format(i)
-        for i in idx_of_max_val:
-            item ="item_{}".format(i)
+        for j in idx_of_max_val:
+            item ="item_{}".format(j)
             G.add_edge(player, item)
             G.nodes[player]["bipartite"], G.nodes[item]["bipartite"] = 0, 1
     return G
@@ -56,7 +56,8 @@ def matching_or_cset(G):
     if num_xs == num_ys and num_xs == min_f:
         ret = []
         for edge in residual.edges.data():
-            if edge[0] != "source" and edge[1] != "sink" and edge[2]["flow"] > 0:
+            if (edge[0] != "source" and edge[1] != "sink" and edge[1] != "source" 
+                and edge[1] != "sink" and edge[2]["flow"] > 0):
                 ret.append((edge[0], edge[1]))
         return (ret, True)
     return ([x for x in part[0] if x!="source" and x!="sink" and DG.nodes[x]["bipartite"]==0], False)
@@ -77,9 +78,6 @@ def market_eq(n, values):
             for edge in m_or_c[0]:
                 M[int(edge[0].split("_")[1])] = int(edge[1].split("_")[1])
             return (p,M)
-        # print(values)
-        # print("--"*10)
-        # print(m_or_c[0])
         neighbors_incremented = []
         for constrict in m_or_c[0]:
             for neighbor in preferred[constrict]:
@@ -199,14 +197,14 @@ def problem9c():
 
     f.write("MARKET_EQ TESTS\n\n")
     print("Calling market_eq on Figure 8.3...")
-    f.write("Test Example 3\nInputs: \n")
+    f.write("Test 8.3\nInputs: \n")
     f.write("\t\tn: " + str(len(figure83_values)) + "\n")
     f.write("\t\tvalues: " + str(figure83_values) + "\n")
 
     f.write("\tOutputs: \n")
     figure83_market_eq = market_eq(len(figure83_values),figure83_values)
-    f.write("\t\tp: " + str(figure83_market_eq) + "\n")
-    f.write("\t\tM: " + str(figure83_market_eq))
+    f.write("\t\tp: " + str(figure83_market_eq[0]) + "\n")
+    f.write("\t\tM: " + str(figure83_market_eq[1]))
     f.write("\n\n")
     print("Done.")
     print(str(figure83_market_eq))
@@ -236,19 +234,19 @@ def problem9c():
     f.write("\t\tM: " + str(example2_market_eq))
     f.write("\n\n")
     print("Done.")
-    #
-    #
-    # print("Calling market_eq on Example 3...")
-    # f.write("Test Example 3\nInputs: \n")
-    # f.write("\t\tn: " + str(len(example3_values)) + "\n")
-    # f.write("\t\tvalues: " + str(example3_values) + "\n")
-    #
-    # f.write("\tOutputs: \n")
-    # example3_market_eq = market_eq(len(example3_values),example3_values)
-    # f.write("\t\tp: " + str(example3_market_eq) + "\n")
-    # f.write("\t\tM: " + str(example3_market_eq))
-    # f.write("\n\n\n")
-    # print("Done.")
+    
+    
+    print("Calling market_eq on Example 3...")
+    f.write("Test Example 3\nInputs: \n")
+    f.write("\t\tn: " + str(len(example3_values)) + "\n")
+    f.write("\t\tvalues: " + str(example3_values) + "\n")
+    
+    f.write("\tOutputs: \n")
+    example3_market_eq = market_eq(len(example3_values),example3_values)
+    f.write("\t\tp: " + str(example3_market_eq) + "\n")
+    f.write("\t\tM: " + str(example3_market_eq))
+    f.write("\n\n\n")
+    print("Done.")
 
     f.close()
 
