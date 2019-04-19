@@ -12,6 +12,7 @@ from helper_functions import *
 # like
 def matching_or_cset(G):
     DG = gen_di_graph(G)
+    # Use networkx min cut to find matching or constricted set
     min_f, part = nx.minimum_cut(DG, "source", "sink")
     num_xs = len([n for n, d in G.nodes(data=True) if d["bipartite"]==0])
     num_ys = len([n for n, d in G.nodes(data=True) if d["bipartite"]==1])
@@ -21,8 +22,8 @@ def matching_or_cset(G):
         for edge in residual.edges.data():
             if edge[0] != "source" and edge[1] != "sink" and edge[2]["flow"] > 0:
                 ret.append((edge[0], edge[1]))
-        return (ret, True)
-    return ([x for x in part[0] if x!="source" and x!="sink" and DG.nodes[x]["bipartite"]==0], False)
+        return (ret, True) # return matching set and True
+    return ([x for x in part[0] if x!="source" and x!="sink" and DG.nodes[x]["bipartite"]==0], False) # return constricted set and False
 
 # 9 (b)
 # implement an algorithm that given n (the number of players and items,
@@ -34,15 +35,12 @@ def market_eq(n, values):
     p = [0]*n
     M = [0]*n
     while True:
-        preferred = get_preferred_graph(n, values)
-        m_or_c = matching_or_cset(preferred)
-        if m_or_c[1]:
+        preferred = get_preferred_graph(n, values) # get the preferred graph with n and values
+        m_or_c = matching_or_cset(preferred) # use 9a function to find matching or constricted set in preferred graph
+        if m_or_c[1]: # if there is a matching set, return (p,M)
             for edge in m_or_c[0]:
                 M[int(edge[0].split("_")[1])] = int(edge[1].split("_")[1])
             return (p,M)
-        # print(values)
-        # print("--"*10)
-        # print(m_or_c[0])
         neighbors_incremented = []
         for constrict in m_or_c[0]:
             for neighbor in preferred[constrict]:
@@ -80,9 +78,7 @@ def vcg(n, m, values):
         saved_values.append(temp_player1)
 
     # Get market equilibrium
-    # print("Values: " + str(values))
     (_,M) = market_eq(n, values)
-    # print("M: " + str(M))
 
     # Get social welfare of M
     SV = getSocialVal(saved_values,M)
@@ -91,20 +87,18 @@ def vcg(n, m, values):
     for player,item in enumerate(M):
         # Get social welfare not including current player
         SV_no_player = SV - saved_values[player][item]
-        # print("Social val: " + str(SV))
-        # print("SV no player: " + str(SV_no_player))
 
         # Get values array without current player
         new_values = []
-        for i in saved_values:
+        for idx,i in enumerate(saved_values):
             temp_player2 = []
-            if (i != player):
+            if (idx != player):
                 for item_value in i:
                     temp_player2.append(item_value)
                 new_values.append(temp_player2)
-
-        # Add dummy players or items (items with value 0 or players with 0 value for everything)
-        new_values.append([0]*m)
+            else:
+                # Add dummy players or items (items with value 0 or players with 0 value for everything)
+                new_values.append([0]*m)
 
         # Store original values before calling market_eq
         saved_new_values = []
@@ -114,23 +108,15 @@ def vcg(n, m, values):
                 temp_player3.append(item_value)
             saved_new_values.append(temp_player3)
 
-        # print("Saved new values: " + str(saved_new_values))
-
         # Get new market_eq without current player
         (_,new_M) = market_eq(n, new_values)
-        # print("New eq: " + str(new_M))
 
-        # Get the social welfare of the market_eq without the current player
+        # Get the social value of the market_eq without the current player
         new_SV_no_player = getSocialVal(saved_new_values,new_M)
-        # print("New social val: " + str(new_SV_no_player))
-
-        # print("Should be the same: " + str(saved_new_values))
 
         # Set the price that player pays p[i] to its externality
         p[player] = new_SV_no_player - SV_no_player
-        # print("Price :" + str(p[player]))
 
-    # print("p:" + str(p))
     return (p,M)
 
 
@@ -169,86 +155,11 @@ def get_preferred_graph(n, values):
     return G
 
 # Find and returns social value given a matching M and values
-def getSocialVal(vals,M):
+def getSocialVal(values,M):
     SV = 0
     for player,item in enumerate(M):
-        SV += vals[player][item]
+        SV += values[player][item]
     return SV
-
-# Finds and returns path of max flow
-def max_flow(G, s, t):
-
-    max_flow = 0
-
-    # Get a path from s to t
-    path = BFS(G, s, t)
-
-    residual = G
-
-    # While there is a path from source to sink
-    while (path != None):
-
-        # Push maximum flow along this path (minimum cap of edges)
-        path_flow = float("Inf")
-        for i in range(0, len(path)-1):
-            if (residual[path[i]][path[i+1]]['cap'] < path_flow):
-                path_flow = residual[path[i]][path[i+1]]['cap']
-
-        # Increase max flow by max flow of current path
-        max_flow += path_flow
-
-        # Decrease capacity of each edge where flow was added
-        # Create a reverse edge with capacity equal to the flow passed through that edge
-        for i in range(0, len(path)-1):
-            residual[path[i]][path[i+1]]['cap'] -= path_flow
-
-            if (residual[path[i]][path[i+1]]['cap'] == 0):
-                residual.remove_edge(path[i],path[i+1])
-
-            if (residual.has_edge(path[i+1],path[i])):
-                residual[path[i+1]][path[i]]['cap'] += path_flow
-            else:
-                residual.add_edge(path[i+1], path[i])
-                residual[path[i+1]][path[i]]['cap'] = path_flow
-
-        # plt.plot()
-        # nx.draw(residual, with_labels=True, font_weight='bold')
-        # plt.show()
-
-        # Find a path from source to sink in new residual graph
-        path = BFS(residual, s, t)
-
-    return max_flow
-
-# Breadth-First-Search algorithm
-def BFS(G,i,j):
-    # Check if source is target
-    if (i == j):
-      return None
-
-    G.nodes[i]['previous'] = None
-
-    discovered = []
-    queue = [i]
-
-    path = []
-
-    while queue:
-        temp = queue.pop(0)
-        discovered.append(temp)
-        neighbors = [n for n in list(G[temp]) if n not in queue and n not in discovered]
-        for neighbor in neighbors:
-            G.nodes[neighbor]['previous'] = temp
-        if j in neighbors:
-            n = j
-            while (G.nodes[n]['previous'] != None):
-                path.insert(0,n)
-                n = G.nodes[n]['previous']
-            path.insert(0,i)
-            return path
-        queue.extend(neighbors)
-
-    return None
 
 
 ##########################################################
@@ -277,11 +188,13 @@ def problem9c():
     figure83_matching_or_cset = matching_or_cset(figure83_preferred_graph)
     if (figure83_matching_or_cset[1]):
         f.write("\t\tPerfect Matching: " + str(figure83_matching_or_cset[0]))
+        print("\tPerfect Matching: " + str(figure83_matching_or_cset[0]))
     else:
         f.write("\t\tConstricted Set: " + str(figure83_matching_or_cset[0]))
+        print("\tConstricted Set: " + str(figure83_matching_or_cset[0]))
 
     f.write("\n\n")
-    print("Done.")
+    print("Done.\n\n")
 
 
     print("Calling matching_or_cset on Example 1...")
@@ -294,10 +207,12 @@ def problem9c():
     example1_matching_or_cset = matching_or_cset(example1_preferred_graph)
     if (example1_matching_or_cset[1]):
         f.write("\t\tPerfect Matching: " + str(example1_matching_or_cset[0]))
+        print("\tPerfect Matching: " + str(example1_matching_or_cset[0]))
     else:
         f.write("\t\tConstricted Set: " + str(example1_matching_or_cset[0]))
+        print("\tConstricted Set: " + str(example1_matching_or_cset[0]))
     f.write("\n\n")
-    print("Done.")
+    print("Done.\n\n")
 
 
     print("Calling matching_or_cset on Example 2...")
@@ -310,10 +225,12 @@ def problem9c():
     example2_matching_or_cset = matching_or_cset(example2_preferred_graph)
     if (example2_matching_or_cset[1]):
         f.write("\t\tPerfect Matching: " + str(example2_matching_or_cset[0]))
+        print("\tPerfect Matching: " + str(example2_matching_or_cset[0]))
     else:
         f.write("\t\tConstricted Set: " + str(example2_matching_or_cset[0]))
+        print("\tConstricted Set: " + str(example2_matching_or_cset[0]))
     f.write("\n\n")
-    print("Done.")
+    print("Done.\n\n")
 
 
     print("Calling matching_or_cset on Example 3...")
@@ -326,10 +243,12 @@ def problem9c():
     example3_matching_or_cset = matching_or_cset(example3_preferred_graph)
     if (example3_matching_or_cset[1]):
         f.write("\t\tPerfect Matching: " + str(example3_matching_or_cset[0]))
+        print("\tPerfect Matching: " + str(example3_matching_or_cset[0]))
     else:
         f.write("\t\tConstricted Set: " + str(example3_matching_or_cset[0]))
+        print("\tConstricted Set: " + str(example3_matching_or_cset[0]))
     f.write("\n\n\n")
-    print("Done.")
+    print("Done.\n\n")
 
 
     f.write("MARKET_EQ TESTS\n\n")
@@ -342,8 +261,10 @@ def problem9c():
     figure83_market_eq = market_eq(len(figure83_values),figure83_values)
     f.write("\t\tp: " + str(figure83_market_eq[0]) + "\n")
     f.write("\t\tM: " + str(figure83_market_eq[1]))
+    print("\tp: " + str(figure83_market_eq[0]))
+    print("\tM: " + str(figure83_market_eq[1]))
     f.write("\n\n")
-    print("Done.")
+    print("Done.\n\n")
 
 
     print("Calling market_eq on Example 1...")
@@ -355,8 +276,10 @@ def problem9c():
     example1_market_eq = market_eq(len(example1_values),example1_values)
     f.write("\t\tp: " + str(example1_market_eq[0]) + "\n")
     f.write("\t\tM: " + str(example1_market_eq[1]))
+    print("\tp: " + str(example1_market_eq[0]))
+    print("\tM: " + str(example1_market_eq[1]))
     f.write("\n\n")
-    print("Done.")
+    print("Done.\n\n")
 
 
     print("Calling market_eq on Example 2...")
@@ -366,10 +289,12 @@ def problem9c():
 
     f.write("\tOutputs: \n")
     example2_market_eq = market_eq(len(example2_values),example2_values)
-    f.write("\t\tp: " + str(example2_market_eq) + "\n")
-    f.write("\t\tM: " + str(example2_market_eq))
+    f.write("\t\tp: " + str(example2_market_eq[0]) + "\n")
+    f.write("\t\tM: " + str(example2_market_eq[1]))
+    print("\tp: " + str(example2_market_eq[0]))
+    print("\tM: " + str(example2_market_eq[1]))
     f.write("\n\n")
-    print("Done.")
+    print("Done.\n\n")
 
 
     print("Calling market_eq on Example 3...")
@@ -379,10 +304,11 @@ def problem9c():
 
     f.write("\tOutputs: \n")
     example3_market_eq = market_eq(len(example3_values),example3_values)
-    f.write("\t\tp: " + str(example3_market_eq) + "\n")
-    f.write("\t\tM: " + str(example3_market_eq))
-    f.write("\n\n\n")
-    print("Done.")
+    f.write("\t\tp: " + str(example3_market_eq[0]) + "\n")
+    f.write("\t\tM: " + str(example3_market_eq[1]))
+    print("\tp: " + str(example3_market_eq[0]))
+    print("\tM: " + str(example3_market_eq[1]))
+    print("Done.\n\n")
 
     f.close()
 
@@ -413,6 +339,9 @@ def problem10c():
     figure83_vcg = vcg(len(figure83_values),len(figure83_values[0]),figure83_values)
     f.write("\t\tp: " + str(figure83_vcg[0]) + "\n")
     f.write("\t\tM: " + str(figure83_vcg[1]) + "\n")
+    print("\tp: " + str(figure83_vcg[0]))
+    print("\tM: " + str(figure83_vcg[1]))
+    print("Done.\n\n")
 
     f.write("\n\n")
 
@@ -427,6 +356,9 @@ def problem10c():
     example1_vcg = vcg(len(example1_values),len(example1_values[0]),example1_values)
     f.write("\t\tp: " + str(example1_vcg[0]) + "\n")
     f.write("\t\tM: " + str(example1_vcg[1]) + "\n")
+    print("\tp: " + str(example1_vcg[0]))
+    print("\tM: " + str(example1_vcg[1]))
+    print("Done.\n\n")
 
     f.write("\n\n")
 
@@ -441,6 +373,9 @@ def problem10c():
     example2_vcg = vcg(len(example2_values),len(example2_values[0]),example2_values)
     f.write("\t\tp: " + str(example2_vcg[0]) + "\n")
     f.write("\t\tM: " + str(example2_vcg[1]) + "\n")
+    print("\tp: " + str(example2_vcg[0]))
+    print("\tM: " + str(example2_vcg[1]))
+    print("Done.\n\n")
 
     f.write("\n\n")
 
@@ -455,9 +390,9 @@ def problem10c():
     example3_vcg = vcg(len(example3_values),len(example3_values[0]),example3_values)
     f.write("\t\tp: " + str(example3_vcg[0]) + "\n")
     f.write("\t\tM: " + str(example3_vcg[1]) + "\n")
-
-    f.write("\n\n")
-    print("Done.")
+    print("\tp: " + str(example3_vcg[0]))
+    print("\tM: " + str(example3_vcg[1]))
+    print("Done.\n\n")
 
     f.close()
 
@@ -477,30 +412,32 @@ def problem11b():
     for player in range(20):
         p_values = [i*player_values_for_items[player] for i in range(1,21,1)]
         bundle_values.append(p_values)
-    print(bundle_values)
+    print("\tPlayers: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]")
+    print("\tRandom Player Values for the Item: [2,3,47,38,25,8,36,41,12,23,13,13,13,12,30,15,3,16,8,11]")
+    print("\tValues of Item Bundles for Each Player: [[1*2,2*2,3*2,...][1*3,2*3,3*3,...][1*47,2*47,3*47,...][1*38,2*38,3*38,...]...]")
+    print("\tGenerated Values: " + str(bundle_values))
 
     f.write("Problem 11a\n\n")
     f.write("\tPlayers: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]\n")
     f.write("\tRandom Player Values for the Item: [2,3,47,38,25,8,36,41,12,23,13,13,13,12,30,15,3,16,8,11]\n")
     f.write("\tValues of Item Bundles for Each Player: [[1*2,2*2,3*2,...][1*3,2*3,3*3,...][1*47,2*47,3*47,...][1*38,2*38,3*38,...]...]\n\n")
+
     f.write("Problem 11b\n\n")
     f.write("\tInputs: \n")
     f.write("\t\tn: " + str(len(bundle_values)) + "\n")
     f.write("\t\tm: " + str(len(bundle_values[0])) + "\n")
     f.write("\t\tvalues: " + str(bundle_values) + "\n")
 
-    print("Problem 11b...")
+    print("\nProblem 11b...")
     (p_problem11,M_problem11) = vcg(len(bundle_values),len(bundle_values[0]),bundle_values)
-    print("p: " + str(p_problem11))
-    print("M: " + str(M_problem11))
-
     f.write("\tOutputs: \n")
     f.write("\t\tp: " + str(p_problem11) + "\n")
     f.write("\t\tM: " + str(M_problem11) + "\n")
+    print("\tp: " + str(p_problem11))
+    print("\tM: " + str(M_problem11))
+    print("Done.\n\n")
 
-    print("Done.")
 
-
-# problem9c()
-# problem10c()
+problem9c()
+problem10c()
 problem11b()
