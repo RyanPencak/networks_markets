@@ -6,30 +6,37 @@ python_version = "3"
 
 # Important: You are NOT allowed to modify the method signatures (i.e. the arguments and return types each function takes).
 
+import networkx as nx
+
 # Implement the methods in this class as appropriate. Feel free to add other methods
 # and attributes as needed.
 # Assume that nodes are represented by indices between 0 and number_of_nodes - 1
 class DirectedGraph:
 
     def __init__(self,number_of_nodes):
-        pass
+        self.G = nx.Graph()
+
+        for n in range(number_of_nodes):
+            self.G.add_node(n)
 
     def add_edge(self, origin_node, destination_node):
-        pass
+        self.G.add_edge(origin_node,destination_node)
 
     def edges_from(self, origin_node):
         ''' This method shold return a list of all the nodes u such that the edge (origin_node,u) is
         part of the graph.'''
-        pass
+        return list(self.G.adj(origin_node))
 
     def check_edge(self, origin_node, destination_node):
         ''' This method should return true is there is an edge between origin_node and destination_node
         and destination_node, and false otherwise'''
-        pass
+        if (destination_node in list(self.G.adj(origin_node))):
+            return True
+        return False
 
     def number_of_nodes(self):
         ''' This method should return the number of nodes in the graph'''
-        pass
+        return self.G.number_of_nodes()
 
 def scaled_page_rank(graph, num_iter, eps = 1/7.0):
     ''' This method, given a directed graph, should run the epsilon-scaled page-rank
