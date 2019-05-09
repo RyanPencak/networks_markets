@@ -28,6 +28,10 @@ class DirectedGraph:
         part of the graph.'''
         return list(self.G.adj[origin_node])
 
+    def in_edges(self, dest_node):
+        in_edges = self.G.in_edges(dest_node)
+        return [i[0] for i in in_edges]
+
     def check_edge(self, origin_node, destination_node):
         ''' This method should return true is there is an edge between origin_node and destination_node
         and destination_node, and false otherwise'''
@@ -54,11 +58,10 @@ def scaled_page_rank(graph, num_iter, eps = 1/7.0):
     for i in range(num_iter):
         for v in range(n):
             summation = 0
-            for v_prime in graph.edges_from(v):
-                summation += (scores[v_prime][i]/len(graph.edges_from(v_prime)))
-
+            for v_prime in graph.in_edges(v):
+                summation += (scores[v_prime][i]/float(len(graph.edges_from(v_prime))))
             scores[v][i+1] = ((eps/n) + ((1 - eps) * summation))
-
+            # print("ENDROUND")
     for node in scores.keys():
         scores[node] = scores[node][-1]
 
