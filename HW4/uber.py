@@ -11,7 +11,7 @@ def dist(a,b):
 
 # Give a representation for riders/ drivers somewhere which can be included in your graph used in stable_outcome
 
-# Given a (bipartite) graph G with edge values specified by v, 
+# Given a (bipartite) graph G with edge values specified by v,
 # output a stable outcome (M,a) consisting of a matching and allocations
 def stable_outcome(G,v):
 	M = None
@@ -87,6 +87,7 @@ def generate_values(rider_list, driver_list):
 	print("Unmatchable riders: {}".format(unmatchable_riders))
 	print("Unmatchable drivers: {}".format(unmatchable_drivers))
 	print("Matchings:{}".format(pairings))
+	print("---")
 	return t
 
 
@@ -128,8 +129,7 @@ test_1()
 test_2()
 
 for r, d in zip([10, 20, 5], [10, 5, 20]):
-	print("Doing {} riders, {} drivers".format(r, d))
+	print("\nDoing {} riders, {} drivers\n".format(r, d))
 	for i in range(100):
 		gen_random(r, d)
-	print("-"*30)
-
+	print("\n" + "-"*30)
