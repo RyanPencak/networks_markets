@@ -39,7 +39,8 @@ def market_eq(n, values):
         if m_or_c[1]: # if there is a matching set, return (p,M)
             for edge in m_or_c[0]:
                 M[int(edge[0].split("_")[1])] = int(edge[1].split("_")[1])
-            return (p,M)
+            return (True, p,M)
+        # print(values)
         neighbors_incremented = []
         for constrict in m_or_c[0]:
             for neighbor in preferred[constrict]:
@@ -57,6 +58,12 @@ def market_eq(n, values):
                 p[i] -= 1
                 for j in range(n):
                     values[j][i] += 1
+
+        count = 0
+        for v in values:
+            if sum(1 for i in v if i < 0) == len(v):
+                return (False, count)
+            count += 1
 
 # 10 (b)
 # Given n players 0,...,n-1 and m items 0,...,m-1 and valuations
