@@ -87,36 +87,35 @@ def generate_values(rider_list, driver_list):
 	print("Unmatchable riders: {}".format(unmatchable_riders))
 	print("Unmatchable drivers: {}".format(unmatchable_drivers))
 	print("Matchings:{}".format(pairings))
-	print("---")
 	return t
 
 
 def test_1():
-	r_1 = Rider("a", curr_loc=(0,0), end_loc=(5,2), val=15)
-	r_2 = Rider("b", curr_loc = (0,1), end_loc = (0,2), val=10)
-	r_3 = Rider("c", curr_loc = (3,4), end_loc = (5,1), val=18)
-	r_4 = Rider("d", curr_loc = (9,8), end_loc = (8,1), val=20)
-	r_5 = Rider("e", curr_loc = (6,3), end_loc = (3,0), val=4)
-	d_1 = Driver("f", curr_loc=(1,1))
-	d_2 = Driver("g", curr_loc=(4,2))
-	d_3 = Driver("h", curr_loc=(4,9))
-	d_4 = Driver("i", curr_loc=(8,5))
-	d_5 = Driver("j", curr_loc=(5,5))
-	d_6 = Driver("k", curr_loc=(2,1))
+	r_1 = Rider("rider_1", curr_loc=(0,0), end_loc=(5,2), val=15)
+	r_2 = Rider("rider_2", curr_loc = (0,1), end_loc = (0,2), val=10)
+	r_3 = Rider("rider_3", curr_loc = (3,4), end_loc = (5,1), val=18)
+	r_4 = Rider("rider_4", curr_loc = (9,8), end_loc = (8,1), val=20)
+	r_5 = Rider("rider_5", curr_loc = (6,3), end_loc = (3,0), val=4)
+	d_1 = Driver("driver_1", curr_loc=(1,1))
+	d_2 = Driver("driver_2", curr_loc=(4,2))
+	d_3 = Driver("driver_3", curr_loc=(4,9))
+	d_4 = Driver("driver_4", curr_loc=(8,5))
+	d_5 = Driver("driver_5", curr_loc=(5,5))
+	d_6 = Driver("driver_6", curr_loc=(2,1))
 
 	generate_values([r_1, r_2, r_3, r_4, r_5], [d_1, d_2, d_3, d_4, d_5, d_6])
 
 def test_2():
-	r_1 = Rider("joe", curr_loc=(1,3), end_loc=(4,2), val=15)
-	r_2 = Rider("tom", curr_loc = (3,5), end_loc = (2,5), val=10)
-	r_3 = Rider("jane", curr_loc = (4,9), end_loc = (8,2), val=24)
-	r_4 = Rider("jess", curr_loc = (4,8), end_loc = (8,1), val=22)
-	r_5 = Rider("t", curr_loc = (5,6), end_loc = (6,5), val=18)
-	d_1 = Driver("a", curr_loc=(3,1))
-	d_2 = Driver("b", curr_loc=(4,4))
-	d_3 = Driver("c", curr_loc=(9,5))
-	d_4 = Driver("d", curr_loc=(9,3))
-	d_5 = Driver("e", curr_loc=(3,3))
+	r_1 = Rider("rider_1", curr_loc=(1,3), end_loc=(4,2), val=15)
+	r_2 = Rider("rider_2", curr_loc = (3,5), end_loc = (2,5), val=10)
+	r_3 = Rider("rider_3", curr_loc = (4,9), end_loc = (8,2), val=24)
+	r_4 = Rider("rider_4", curr_loc = (4,8), end_loc = (8,1), val=22)
+	r_5 = Rider("rider_5", curr_loc = (5,6), end_loc = (6,5), val=18)
+	d_1 = Driver("driver_1", curr_loc=(3,1))
+	d_2 = Driver("driver_2", curr_loc=(4,4))
+	d_3 = Driver("driver_3", curr_loc=(9,5))
+	d_4 = Driver("driver_4", curr_loc=(9,3))
+	d_5 = Driver("driver_5", curr_loc=(3,3))
 
 	generate_values([r_1, r_2, r_3, r_4, r_5], [d_1, d_2, d_3, d_4, d_5])
 
@@ -125,11 +124,23 @@ def gen_random(r, d):
 	drivers = [Driver(name=i, curr_loc=(randint(0,100), randint(0,100))) for i in range(d)]
 	generate_values(riders, drivers)
 
+print("=====================")
+print("PROBLEM 10A TEST 1")
+print("=====================")
 test_1()
+
+print("\n=====================")
+print("PROBLEM 10A TEST 2")
+print("=====================")
 test_2()
 
+print("\n=====================")
+print("PROBLEM 10B")
+print("=====================")
 for r, d in zip([10, 20, 5], [10, 5, 20]):
 	print("\nDoing {} riders, {} drivers\n".format(r, d))
 	for i in range(100):
+		print("Run: " + str(i))
 		gen_random(r, d)
+		print("---")
 	print("\n" + "-"*30)

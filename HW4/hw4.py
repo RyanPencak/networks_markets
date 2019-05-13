@@ -211,7 +211,7 @@ def question8b():
     print("Out-degree of max score node: " + str(len(fb_G.edges_from(max_score_node))))
 
     # Print information on node with maximum score
-    print("Node with min score :" + str(min_score_node))
+    print("Node with min score: " + str(min_score_node))
     print("Min score of node: " + str(fb_scores[min_score_node]))
     print("Out-degree of min score node: " + str(len(fb_G.edges_from(min_score_node))))
 
